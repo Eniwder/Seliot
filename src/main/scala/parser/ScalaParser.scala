@@ -24,16 +24,13 @@ object ScalaParser extends ParserUtil {
     // whiteSpace       ::=  ‘\\u0020’ | ‘\\u0009’ | ‘\\u000D’ | ‘\\u000A’
     // override lazy val whiteSpace = "\\u0020" | "\\u0009" | "\\u000D" | "\\u000A"
     // upper            ::=  ‘A’ | … | ‘Z’ | ‘$’ | ‘_’  // and Unicode category Lu
-    lazy val upper =
-      """[A-Z]""".r | "$" | "_"
+    lazy val upper = """[A-Z]""".r | "$" | "_"
     // lower            ::=  ‘a’ | … | ‘z’ // and Unicode category Ll
-    lazy val lower =
-      """[a-z]""".r
+    lazy val lower = """[a-z]""".r
     // letter           ::=  upper | lower // and Unicode categories Lo, Lt, Nl
     lazy val letter = upper | lower
     // digit            ::=  ‘0’ | … | ‘9’
-    lazy val digit =
-      """[0-9]""".r
+    lazy val digit = """[0-9]""".r
     // paren            ::=  ‘(’ | ‘)’ | ‘[’ | ‘]’ | ‘{’ | ‘}’
     lazy val paren = "(" | ")" | "[" | "]" | "" | ".*"
     // delim            ::=  ‘`’ | ‘'’ | ‘"’ | ‘.’ | ‘;’ | ‘,’
@@ -42,8 +39,7 @@ object ScalaParser extends ParserUtil {
     lazy val opchar = printableChar
 
     // printableChar    ::= // all characters in [\u0020, \u007F] inclusive
-    lazy val printableChar =
-      """[\u0020-\u007F]""".r
+    lazy val printableChar = """[\u0020-\u007F]""".r
     // charEscapeSeq    ::= ‘\‘ (‘b‘ | ‘t‘ | ‘n‘ | ‘f‘ | ‘r‘ | ‘"‘ | ‘'‘ | ‘\‘)
     lazy val charEscapeSeq = "\\" ~ ("b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\")
 
@@ -65,8 +61,7 @@ object ScalaParser extends ParserUtil {
     // hexNumeral       ::=  ‘0’ (‘x’ | ‘X’) hexDigit {hexDigit}
     lazy val hexNumeral = "0" ~ ("x" | "X") ~ UnicodeEscapes.hexDigit ~ UnicodeEscapes.hexDigit.*
     // nonZeroDigit     ::=  ‘1’ | … | ‘9’
-    lazy val nonZeroDigit =
-      """[1-9]""".r
+    lazy val nonZeroDigit = """[1-9]""".r
 
     // floatingPointLiteral  ::=  digit {digit} ‘.’ digit {digit} [exponentPart] [floatType]
     //                           |  ‘.’ digit {digit} [exponentPart] [floatType]  |  digit {digit} exponentPart [floatType]
@@ -89,7 +84,7 @@ object ScalaParser extends ParserUtil {
     lazy val stringLiteral = "\"" ~ stringElement.* ~ "\"" | "\"\"\"" ~ multiLineChars ~ "\"\"\""
 
     // stringElement    ::=  charNoDoubleQuoteOrNewline  |  UnicodeEscape    |  charEscapeSeq
-    lazy val stringElement =  """[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r | UnicodeEscapes.UnicodeEscape | charEscapeSeq
+    lazy val stringElement = """[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r | UnicodeEscapes.UnicodeEscape | charEscapeSeq
     // multiLineChars   ::=  {[‘"’] [‘"’] charNoDoubleQuote} {‘"’}
     lazy val multiLineChars = ("\"".? ~ "\"".? ~ ("""[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r)).* ~ rep("\"")
     // symbolLiteral    ::=  ‘'’ plainid
@@ -99,9 +94,8 @@ object ScalaParser extends ParserUtil {
     //                        |  ‘//’ “any sequence of characters up to end of line”
     lazy val comment = "/*" ~ """(.*?)""".r ~ "*/" | "//" ~ """(.*?)""".r ~ nl
 
-    // nl               ::=  “newlinecharacter”
+    // TODO nl               ::=  “newlinecharacter”
     lazy val nl = "\r".? ~ "\n"
-    // TODO
     // semi             ::=  ‘;’ |  nl {nl}
     lazy val semi = ";" | nl ~ nl.*
 
