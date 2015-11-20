@@ -5,7 +5,7 @@ import scala.util.parsing.input.Positional
 import scalaz._
 import scalaz.syntax.either._
 
-trait ParserUtil extends RegexParsers {
+trait ParserUtil extends RegexParsers{
 
   def run[P](expr: Parser[P], input: String): \/[String, _] = parseAll(expr, input) match {
     case Success(result, _) => result.right
