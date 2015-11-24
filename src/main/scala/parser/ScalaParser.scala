@@ -6,9 +6,18 @@ import scala.util.parsing.input.Positional
 
 object ScalaParser extends ParserUtil {
 
-  object UnicodeEscapes {
+  sealed trait Types
+  case class IntegerType() extends Types
+  case class FloatType() extends Types
+  case class DoubleType() extends Types
+  case class BooleanType() extends Types
+  case class StringType() extends Types
+  case class CharacterType() extends Types
+  case class SymbolType() extends Types
+  case class OtherType() extends Types
 
-    import scala.collection.immutable.{StringOps => _}
+
+  object UnicodeEscapes {
 
     case class UnicodeEscapeC(str: String) extends Positional
 
@@ -22,6 +31,11 @@ object ScalaParser extends ParserUtil {
   }
 
   object LexicalSyntax {
+
+    case class LiteralC(str: String, tpe: Types) extends Positional {
+
+
+    }
 
     // whiteSpace       ::=  ‘\\u0020’ | ‘\\u0009’ | ‘\\u000D’ | ‘\\u000A’
     // override lazy val whiteSpace = "\\u0020" | "\\u0009" | "\\u000D" | "\\u000A"
@@ -68,9 +82,9 @@ object ScalaParser extends ParserUtil {
     // floatingPointLiteral  ::=  digit {digit} ‘.’ digit {digit} [exponentPart] [floatType]
     //                           |  ‘.’ digit {digit} [exponentPart] [floatType]  |  digit {digit} exponentPart [floatType]
     //                           |  digit {digit} [exponentPart] floatType
-    lazy val floatingPointLiteral = digit ~ digit.* ~ "." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.? |
-      "." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.? | digit ~ digit.* ~ exponentPart ~ floatType.? |
-      digit ~ digit.* ~ exponentPart.? ~ floatType
+    lazy val floatingPointLiteral = (digit ~ digit.* ~ "." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.?) |
+      ("." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.?) | (digit ~ digit.* ~ exponentPart ~ floatType.?) |
+      (digit ~ digit.* ~ exponentPart.? ~ floatType)
     // exponentPart     ::=  (‘E’ | ‘e’) [‘+’ | ‘-’] digit {digit}
     lazy val exponentPart = ("E" | "e") ~ ("+" | "-").? ~ digit ~ digit.*
     // floatType        ::=  ‘F’ | ‘f’ | ‘D’ | ‘d’
@@ -100,6 +114,8 @@ object ScalaParser extends ParserUtil {
     lazy val nl = "\r".? ~ "\n"
     // semi             ::=  ‘;’ |  nl {nl}
     lazy val semi = ";" | nl ~ nl.*
+    lazy val Literal = ("-".? ~ integerLiteral) | ("-".? ~ floatingPointLiteral) | booleanLiteral |
+      characterLiteral | stringLiteral | symbolLiteral | "null"
 
   }
 
@@ -109,8 +125,6 @@ object ScalaParser extends ParserUtil {
 
     //    Literal           ::=  [‘-’] integerLiteral  |  [‘-’] floatingPointLiteral  |  booleanLiteral
     //      |  characterLiteral  |  stringLiteral  |  symbolLiteral   |  ‘null’
-    lazy val Literal = "-".? ~ integerLiteral | "-".? ~ floatingPointLiteral | booleanLiteral |
-      characterLiteral | stringLiteral | symbolLiteral | "null"
     //    QualId            ::=  id {‘.’ id}
     lazy val QualId = repsep(id, ".")
     //    ids               ::=  id {‘,’ id}
