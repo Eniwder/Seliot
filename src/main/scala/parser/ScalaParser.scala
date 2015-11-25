@@ -21,12 +21,12 @@ object ScalaParser extends ParserUtil {
 
     case class UnicodeEscapeC(str: String) extends Positional
 
-    lazy val UnicodeEscape = positioned(
+    def UnicodeEscape = positioned(
       ("\\" ~ "u" ~ rep("u") ~ hexDigit ~ hexDigit ~ hexDigit ~ hexDigit)
         ^^ { case bs ~ u ~ ul ~ h1 ~ h2 ~ h3 ~ h4 => UnicodeEscapeC("" + bs + u + ul.mkString("") + h1 + h2 + h3 + h4) }
     )
 
-    lazy val hexDigit = """[0-9|a-f|A-F]""".r
+    def hexDigit = """[0-9|a-f|A-F]""".r
 
   }
 
@@ -38,84 +38,82 @@ object ScalaParser extends ParserUtil {
     }
 
     // whiteSpace       ::=  ‘\\u0020’ | ‘\\u0009’ | ‘\\u000D’ | ‘\\u000A’
-    // override lazy val whiteSpace = "\\u0020" | "\\u0009" | "\\u000D" | "\\u000A"
+    // override def whiteSpace = "\\u0020" | "\\u0009" | "\\u000D" | "\\u000A"
     // upper            ::=  ‘A’ | … | ‘Z’ | ‘$’ | ‘_’  // and Unicode category Lu
-    lazy val upper = """[A-Z]""".r | "$" | "_"
+    def upper = """[A-Z]""".r | "$" | "_"
     // lower            ::=  ‘a’ | … | ‘z’ // and Unicode category Ll
-    lazy val lower = """[a-z]""".r
+    def lower = """[a-z]""".r
     // letter           ::=  upper | lower // and Unicode categories Lo, Lt, Nl
-    lazy val letter = upper | lower
+    def letter = upper | lower
     // digit            ::=  ‘0’ | … | ‘9’
-    lazy val digit = """[0-9]""".r
+    def digit = """[0-9]""".r
     // paren            ::=  ‘(’ | ‘)’ | ‘[’ | ‘]’ | ‘{’ | ‘}’
-    lazy val paren = "(" | ")" | "[" | "]" | "" | ".*"
+    def paren = "(" | ")" | "[" | "]" | "" | ".*"
     // delim            ::=  ‘`’ | ‘'’ | ‘"’ | ‘.’ | ‘;’ | ‘,’
-    lazy val delim = "`" | "'" | "\"" | "." | ";" | ","
+    def delim = "`" | "'" | "\"" | "." | ";" | ","
     // opchar           ::= printableChar not matched by (whiteSpace | upper | lower | letter | digit | paren | delim | opchar | Unicode_Sm | Unicode_So)
-    lazy val opchar = printableChar
+    def opchar = printableChar
 
     // printableChar    ::= // all characters in [\u0020, \u007F] inclusive
-    lazy val printableChar = """[\u0020-\u007F]""".r
+    def printableChar = """[\u0020-\u007F]""".r
     // charEscapeSeq    ::= ‘\‘ (‘b‘ | ‘t‘ | ‘n‘ | ‘f‘ | ‘r‘ | ‘"‘ | ‘'‘ | ‘\‘)
-    lazy val charEscapeSeq = "\\" ~ ("b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\")
+    def charEscapeSeq = "\\" ~ ("b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\")
 
     // op               ::=  opchar {opchar}
-    lazy val op = opchar ~ opchar.*
+    def op = opchar ~ opchar.*
     // varid            ::=  lower idrest
-    lazy val varid = lower ~ idrest
+    def varid = lower ~ idrest
     // plainid          ::=  upper idrest | varid | op
-    lazy val plainid = upper ~ idrest | varid | op
+    def plainid = upper ~ idrest | varid | op
     // id               ::=  plainid | ‘`’ stringLiteral ‘`’
-    lazy val id = plainid | "`" ~ stringLiteral ~ "`"
+    def id = plainid | "`" ~ stringLiteral ~ "`"
     // idrest           ::=  {letter | digit} [‘_’ op]
-    lazy val idrest = letter | digit.* ~ ("_" ~ op).?
+    def idrest = letter | digit.* ~ ("_" ~ op).?
 
     // integerLiteral   ::=  (decimalNumeral | hexNumeral) [‘L’ | ‘l’]
-    lazy val integerLiteral = (decimalNumeral | hexNumeral) ~ ("L" | "l").?
+    def integerLiteral = (decimalNumeral | hexNumeral) ~ ("L" | "l").?
     // decimalNumeral   ::=  ‘0’ | nonZeroDigit {digit}
-    lazy val decimalNumeral = "0" | nonZeroDigit ~ digit.*
+    def decimalNumeral = "0" | nonZeroDigit ~ digit.*
     // hexNumeral       ::=  ‘0’ (‘x’ | ‘X’) hexDigit {hexDigit}
-    lazy val hexNumeral = "0" ~ ("x" | "X") ~ UnicodeEscapes.hexDigit ~ UnicodeEscapes.hexDigit.*
+    def hexNumeral = "0" ~ ("x" | "X") ~ UnicodeEscapes.hexDigit ~ UnicodeEscapes.hexDigit.*
     // nonZeroDigit     ::=  ‘1’ | … | ‘9’
-    lazy val nonZeroDigit = """[1-9]""".r
+    def nonZeroDigit = """[1-9]""".r
 
     // floatingPointLiteral  ::=  digit {digit} ‘.’ digit {digit} [exponentPart] [floatType]
     //                           |  ‘.’ digit {digit} [exponentPart] [floatType]  |  digit {digit} exponentPart [floatType]
     //                           |  digit {digit} [exponentPart] floatType
-    lazy val floatingPointLiteral = (digit ~ digit.* ~ "." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.?) |
+    def floatingPointLiteral = (digit ~ digit.* ~ "." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.?) |
       ("." ~ digit ~ digit.* ~ exponentPart.? ~ floatType.?) | (digit ~ digit.* ~ exponentPart ~ floatType.?) |
       (digit ~ digit.* ~ exponentPart.? ~ floatType)
     // exponentPart     ::=  (‘E’ | ‘e’) [‘+’ | ‘-’] digit {digit}
-    lazy val exponentPart = ("E" | "e") ~ ("+" | "-").? ~ digit ~ digit.*
+    def exponentPart = ("E" | "e") ~ ("+" | "-").? ~ digit ~ digit.*
     // floatType        ::=  ‘F’ | ‘f’ | ‘D’ | ‘d’
-    lazy val floatType = "F" | "f" | "D" | "d"
+    def floatType = "F" | "f" | "D" | "d"
 
     // booleanLiteral   ::=  ‘true’ | ‘false’
-    lazy val booleanLiteral = "true" | "false"
+    def booleanLiteral = "true" | "false"
 
     // characterLiteral ::=  ‘'’ (charNoQuoteOrNewline | UnicodeEscape | charEscapeSeq) ‘'’
-    lazy val characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
+    def characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
 
     // stringLiteral    ::=  ‘"’ {stringElement} ‘"’  |  ‘"""’ multiLineChars ‘"""’
-    lazy val stringLiteral = "\"" ~ stringElement.* ~ "\"" | "\"\"\"" ~ multiLineChars ~ "\"\"\""
+    def stringLiteral = "\"" ~ stringElement.* ~ "\"" | "\"\"\"" ~ multiLineChars ~ "\"\"\""
 
     // stringElement    ::=  charNoDoubleQuoteOrNewline  |  UnicodeEscape    |  charEscapeSeq
-    lazy val stringElement = """[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r | UnicodeEscapes.UnicodeEscape | charEscapeSeq
+    def stringElement = """[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r | UnicodeEscapes.UnicodeEscape | charEscapeSeq
     // multiLineChars   ::=  {[‘"’] [‘"’] charNoDoubleQuote} {‘"’}
-    lazy val multiLineChars = ("\"".? ~ "\"".? ~ ("""[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r)).* ~ rep("\"")
+    def multiLineChars = ("\"".? ~ "\"".? ~ ("""[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r)).* ~ rep("\"")
     // symbolLiteral    ::=  ‘'’ plainid
-    lazy val symbolLiteral = "\'" ~ plainid
+    def symbolLiteral = "\'" ~ plainid
 
     // comment          ::=  ‘/*’ “any sequence of characters; nested comments are allowed” ‘*/’
     //                        |  ‘//’ “any sequence of characters up to end of line”
-    lazy val comment = "/*" ~ """(.*?)""".r ~ "*/" | "//" ~ """(.*?)""".r ~ nl
+    def comment = "/*" ~ """(.*?)""".r ~ "*/" | "//" ~ """(.*?)""".r ~ nl
 
     // TODO nl               ::=  “newlinecharacter”
-    lazy val nl = "\r".? ~ "\n"
+    def nl = "\r".? ~ "\n"
     // semi             ::=  ‘;’ |  nl {nl}
-    lazy val semi = ";" | nl ~ nl.*
-    lazy val Literal = ("-".? ~ integerLiteral) | ("-".? ~ floatingPointLiteral) | booleanLiteral |
-      characterLiteral | stringLiteral | symbolLiteral | "null"
+    def semi = ";" | nl ~ nl.*
 
   }
 
@@ -125,250 +123,253 @@ object ScalaParser extends ParserUtil {
 
     //    Literal           ::=  [‘-’] integerLiteral  |  [‘-’] floatingPointLiteral  |  booleanLiteral
     //      |  characterLiteral  |  stringLiteral  |  symbolLiteral   |  ‘null’
+    def Literal = ("-".? ~ integerLiteral) | ("-".? ~ floatingPointLiteral) | booleanLiteral |
+      characterLiteral | stringLiteral | symbolLiteral | "null"
+
     //    QualId            ::=  id {‘.’ id}
-    lazy val QualId = repsep(id, ".")
+    def QualId = repsep(id, ".")
     //    ids               ::=  id {‘,’ id}
-    lazy val ids = repsep(id, ",")
+    def ids = repsep(id, ",")
     //    Path              ::=  StableId  |  [id ‘.’] ‘this’
-    lazy val Path: Parser[_] = StableId | (id ~ ".").? ~ "this"
+    def Path: Parser[_] = StableId | (id ~ ".").? ~ "this"
     //    StableId          ::=  id   |  Path ‘.’ id   |  [id ‘.’] ‘super’ [ClassQualifier] ‘.’ id
-    lazy val StableId = id | Path ~ "." ~ id | (id ~ ".").? ~ "super" ~ ClassQualifier.? ~ "." ~ id
+    def StableId = id | Path ~ "." ~ id | (id ~ ".").? ~ "super" ~ ClassQualifier.? ~ "." ~ id
     //    ClassQualifier    ::=  ‘[’ id ‘]’
-    lazy val ClassQualifier = "[" ~ id ~ "]"
+    def ClassQualifier = "[" ~ id ~ "]"
 
     //    Type              ::=  FunctionArgTypes ‘=>’ Type   |  InfixType [ExistentialClause]
-    lazy val Type: Parser[Any] = FunctionArgTypes ~ "=>" ~ Type | InfixType ~ ExistentialClause.?
+    def Type: Parser[Any] = FunctionArgTypes ~ "=>" ~ Type | InfixType ~ ExistentialClause.?
     //      FunctionArgTypes  ::= InfixType  | ‘(’ [ ParamType {‘,’ ParamType } ] ‘)’
-    lazy val FunctionArgTypes = InfixType | "(" ~ repsep(ParamType, ",").? ~ ")"
+    def FunctionArgTypes = InfixType | "(" ~ repsep(ParamType, ",").? ~ ")"
     //    ExistentialClause ::=  ‘forSome’ ‘{’ ExistentialDcl {semi ExistentialDcl} ‘}’
-    lazy val ExistentialClause = "forSome" ~ "{" ~ ExistentialDcl ~ semi ~ ExistentialDcl.* ~ "}"
+    def ExistentialClause = "forSome" ~ "{" ~ ExistentialDcl ~ semi ~ ExistentialDcl.* ~ "}"
     //    ExistentialDcl    ::=  ‘type’ TypeDcl   |  ‘val’ ValDcl
-    lazy val ExistentialDcl = "type" ~ TypeDcl | "val" ~ ValDcl
+    def ExistentialDcl = "type" ~ TypeDcl | "val" ~ ValDcl
     //    InfixType         ::=  CompoundType {id [nl] CompoundType}
-    lazy val InfixType = CompoundType ~ (id ~ nl.? ~ CompoundType).*
+    def InfixType = CompoundType ~ (id ~ nl.? ~ CompoundType).*
     //    CompoundType      ::=  AnnotType {‘with’ AnnotType} [Refinement]   |  Refinement
-    lazy val CompoundType = AnnotType ~ "with" ~ AnnotType.* ~ Refinement.? | Refinement
+    def CompoundType = AnnotType ~ "with" ~ AnnotType.* ~ Refinement.? | Refinement
     //      AnnotType         ::=  SimpleType {Annotation}
-    lazy val AnnotType: Parser[Any] = SimpleType ~ AnnotType.*
+    def AnnotType: Parser[Any] = SimpleType ~ AnnotType.*
     //    SimpleType        ::=  SimpleType TypeArgs   |  SimpleType ‘#’ id
     //    |  StableId   |  Path ‘.’ ‘type’   |  ‘(’ Types ‘)’
-    lazy val SimpleType: Parser[Any] = SimpleType ~ TypeArgs | SimpleType ~ "#" ~ id |
+    def SimpleType: Parser[Any] = SimpleType ~ TypeArgs | SimpleType ~ "#" ~ id |
       StableId | Path ~ "." ~ "type" | "(" ~ Types ~ ")"
     //    TypeArgs          ::=  ‘[’ Types ‘]’
-    lazy val TypeArgs = "[" ~ Types ~ "]"
+    def TypeArgs = "[" ~ Types ~ "]"
     //    Types             ::=  Type {‘,’ Type}
-    lazy val Types = Type ~ repsep(",", Type)
+    def Types = Type ~ repsep(",", Type)
     //    Refinement        ::=  [nl] ‘{’ RefineStat {semi RefineStat} ‘}’
-    lazy val Refinement = nl.? ~ "{" ~ RefineStat ~ semi ~ RefineStat.* ~ "}"
+    def Refinement = nl.? ~ "{" ~ RefineStat ~ semi ~ RefineStat.* ~ "}"
     //    RefineStat        ::=  Dcl   |  ‘type’ TypeDef   |
-    lazy val RefineStat = Dcl | "type" ~ TypeDef | ""
+    def RefineStat = Dcl | "type" ~ TypeDef | ""
     //    TypePat           ::=  Type
-    lazy val TypePat = Type
+    def TypePat = Type
 
     //    Ascription        ::=  ‘:’ InfixType   |  ‘:’ Annotation {Annotation}   |  ‘:’ ‘_’ ‘*’
-    lazy val Ascription = ":" ~ InfixType | ":" ~ Annotation.+ | ":" ~ "_" ~ "*"
+    def Ascription = ":" ~ InfixType | ":" ~ Annotation.+ | ":" ~ "_" ~ "*"
 
     //    Expr              ::=  (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr   |  Expr1
-    lazy val Expr: Parser[Any] = (Bindings | "implicit".? ~ id | "_") ~ "=>" ~ Expr | Expr1
+    def Expr: Parser[Any] = (Bindings | "implicit".? ~ id | "_") ~ "=>" ~ Expr | Expr1
     //      Expr1             ::=  `if' `(' Expr `)' {nl} Expr [[semi] `else' Expr]
     //      |  `while' `(' Expr `)' {nl} Expr   |  `try' (`{' Block `}' | Expr) [`catch' `{' CaseClauses `}'] [`finally' Expr]
     //      |  `do' Expr [semi] `while' `(' Expr ')'  |  `for' (`(' Enumerators `)' | `{' Enumerators `}') {nl} [`yield'] Expr
     //      |  `throw' Expr   |  `return' [Expr]   |  [SimpleExpr `.'] id `=' Expr    |  SimpleExpr1 ArgumentExprs `=' Expr
     //      |  PostfixExpr    |  PostfixExpr Ascription   |  PostfixExpr `match' `{' CaseClauses `}'
-    lazy val Expr1 = "if" ~ "(" ~ Expr ~ ")" ~ nl.* ~ Expr ~ (semi.? ~ "else" ~ Expr)
+    def Expr1 = "if" ~ "(" ~ Expr ~ ")" ~ nl.* ~ Expr ~ (semi.? ~ "else" ~ Expr)
     //      PostfixExpr       ::=  InfixExpr [id [nl]]
-    lazy val PostfixExpr = InfixExpr ~ (id ~ nl.?).?
+    def PostfixExpr = InfixExpr ~ (id ~ nl.?).?
     //      InfixExpr         ::=  PrefixExpr   |  InfixExpr id [nl] InfixExpr
-    lazy val InfixExpr: Parser[Any] = PrefixExpr | InfixExpr ~ id ~ nl.? ~ InfixExpr
+    def InfixExpr: Parser[Any] = PrefixExpr | InfixExpr ~ id ~ nl.? ~ InfixExpr
     //        PrefixExpr        ::=  [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
-    lazy val PrefixExpr = ("-" | "+" | "~" | "!") ~ SimpleExpr
+    def PrefixExpr = ("-" | "+" | "~" | "!") ~ SimpleExpr
     //      SimpleExpr        ::=  ‘new’ (ClassTemplate | TemplateBody)
     //      |  BlockExpr   |  SimpleExpr1 [‘_’]
-    lazy val SimpleExpr: Parser[Any] = "new" ~ (ClassTemplate | TemplateBody) | BlockExpr | SimpleExpr ~ "_".?
+    def SimpleExpr: Parser[Any] = "new" ~ (ClassTemplate | TemplateBody) | BlockExpr | SimpleExpr ~ "_".?
     //      SimpleExpr1       ::=  Literal  |  Path  |  ‘_’   |  ‘(’ [Exprs] ‘)’
     //      |  SimpleExpr ‘.’ id  |  SimpleExpr TypeArgs   |  SimpleExpr1 ArgumentExprs  |  XmlExpr
-    lazy val SimpleExpr1: Parser[Any] = Literal | Path | "_" | "(" ~ Expr.? ~ ")" |
+    def SimpleExpr1: Parser[Any] = Literal | Path | "_" | "(" ~ Expr.? ~ ")" |
       SimpleExpr ~ "." ~ id | SimpleExpr ~ TypeArgs | SimpleExpr1 ~ ArgumentExprs ~ XmlExpressions.XmlExpr
     //        Exprs             ::=  Expr {‘,’ Expr}
-    lazy val Exprs = repsep(Expr, ",")
+    def Exprs = repsep(Expr, ",")
     //      ArgumentExprs     ::=  ‘(’ [Exprs] ‘)’
     //      |  ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ‘)’  |  [nl] BlockExpr
-    lazy val ArgumentExprs = "(" ~ Exprs.? ~ ")" |
+    def ArgumentExprs = "(" ~ Exprs.? ~ ")" |
       "(" ~ (Exprs ~ ",").? ~ PostfixExpr ~ ":" ~ "_" ~ "*" ~ ")" | nl.? ~ BlockExpr
     //        BlockExpr         ::=  ‘{’ CaseClauses ‘}’  |  ‘{’ Block ‘}’
-    lazy val BlockExpr = ("{" ~ CaseClauses ~ "}") | ("{" ~ Block ~ "}")
+    def BlockExpr = ("{" ~ CaseClauses ~ "}") | ("{" ~ Block ~ "}")
     //      Block             ::=  BlockStat {semi BlockStat} [ResultExpr]
-    lazy val Block = BlockStat ~ (semi ~ BlockStat).* ~ ResultExpr.?
+    def Block = BlockStat ~ (semi ~ BlockStat).* ~ ResultExpr.?
     //      BlockStat         ::=  Import  |  {Annotation} [‘implicit’ | ‘lazy’] Def
     // |  {Annotation} {LocalModifier} TmplDef  |  Expr1   |
-    lazy val BlockStat: Parser[Any] = Import | Annotation.? ~ ("implicit" | "lazy") ~ Def | Annotation.* ~ LocalModifier.* ~ TmplDef | ""
+    def BlockStat: Parser[Any] = Import | Annotation.? ~ ("implicit" | "lazy") ~ Def | Annotation.* ~ LocalModifier.* ~ TmplDef | ""
     //      ResultExpr        ::=  Expr1  |  (Bindings | ([‘implicit’] id | ‘_’) ‘:’ CompoundType) ‘=>’ Block
-    lazy val ResultExpr: Parser[Any] = Expr1 | (Bindings | ("implicit".? ~ id | "_") ~ ":" ~ CompoundType) ~ "=>" ~ Block
+    def ResultExpr: Parser[Any] = Expr1 | (Bindings | ("implicit".? ~ id | "_") ~ ":" ~ CompoundType) ~ "=>" ~ Block
 
     //      Enumerators       ::=  Generator {semi Generator}
-    lazy val Enumerators = repsep(Generator, semi)
+    def Enumerators = repsep(Generator, semi)
     //      Generator         ::=  Pattern1 ‘<-’ Expr {[semi] Guard | semi Pattern1 ‘=’ Expr}
-    lazy val Generator = Pattern1 ~ "<-" ~ Expr ~ (semi.? ~ Guard | semi ~ Pattern1 ~ "=" ~ Expr)
+    def Generator = Pattern1 ~ "<-" ~ Expr ~ (semi.? ~ Guard | semi ~ Pattern1 ~ "=" ~ Expr)
 
     //      CaseClauses       ::=  CaseClause { CaseClause }
-    lazy val CaseClauses = CaseClause.+
+    def CaseClauses = CaseClause.+
     //      CaseClause        ::=  ‘case’ Pattern [Guard] ‘=>’ Block
-    lazy val CaseClause = "case" ~ Pattern ~ Guard.? ~ "=>" ~ Block
+    def CaseClause = "case" ~ Pattern ~ Guard.? ~ "=>" ~ Block
     //      Guard             ::=  ‘if’ PostfixExpr
-    lazy val Guard: Parser[Any] = "if" ~ PostfixExpr
+    def Guard: Parser[Any] = "if" ~ PostfixExpr
 
     //      Pattern           ::=  Pattern1 { ‘|’ Pattern1 }
-    lazy val Pattern = repsep(Pattern1, "|")
+    def Pattern = repsep(Pattern1, "|")
     //      Pattern1          ::=  varid ‘:’ TypePat  |  ‘_’ ‘:’ TypePat  |  Pattern2
-    lazy val Pattern1 = (varid ~ ":" ~ TypePat) | "_" ~ ":" ~ TypePat | Pattern2
+    def Pattern1 = (varid ~ ":" ~ TypePat) | "_" ~ ":" ~ TypePat | Pattern2
     //        Pattern2          ::=  varid [‘@’ Pattern3]  |  Pattern3
-    lazy val Pattern2 = varid ~ ("@" ~ Pattern3).? | Pattern3
+    def Pattern2 = varid ~ ("@" ~ Pattern3).? | Pattern3
     //        Pattern3          ::=  SimplePattern  |  SimplePattern { id [nl] SimplePattern }
-    lazy val Pattern3 = SimplePattern | repsep(SimplePattern, id ~ nl.?)
+    def Pattern3 = SimplePattern | repsep(SimplePattern, id ~ nl.?)
     //      SimplePattern     ::=  ‘_’  |  varid  |  Literal  |  StableId
     //        |  StableId ‘(’ Patterns ‘)’  |  StableId ‘(’ [Patterns ‘,’] [varid ‘@’] ‘_’ ‘*’ ‘)’
     //      |  ‘(’ [Patterns] ‘)’  |  XmlPattern
-    lazy val SimplePattern = "_" | varid | Literal | StableId |
+    def SimplePattern = "_" | varid | Literal | StableId |
       StableId ~ "(" ~ Patterns ~ ")" | StableId ~ "(" ~ (Patterns ~ ",").? ~ (varid ~ "@").? ~ "_" ~ "*" ~ ")" |
       "(" ~ Patterns.? ~ ")" | XmlExpressions.XmlPattern
     //        Patterns          ::=  Pattern [‘,’ Patterns]  |  ‘_’ ’*’
-    lazy val Patterns: Parser[Any] = repsep(Pattern, ",") | "_" ~ "*"
+    def Patterns: Parser[Any] = repsep(Pattern, ",") | "_" ~ "*"
 
     //      TypeParamClause   ::=  ‘[’ VariantTypeParam {‘,’ VariantTypeParam} ‘]’
-    lazy val TypeParamClause = "[" ~ repsep(VariantTypeParam, ",") ~ "]"
+    def TypeParamClause = "[" ~ repsep(VariantTypeParam, ",") ~ "]"
     //      FunTypeParamClause::=  ‘[’ TypeParam {‘,’ TypeParam} ‘]’
-    lazy val FunTypeParamClause = "[" ~ repsep(TypeParam, ",") ~ "]"
+    def FunTypeParamClause = "[" ~ repsep(TypeParam, ",") ~ "]"
     //      VariantTypeParam  ::=  {Annotation} [‘+’ | ‘-’] TypeParam
-    lazy val VariantTypeParam: Parser[Any] = Annotation.* ~ ("+" | "-") ~ TypeParam
+    def VariantTypeParam: Parser[Any] = Annotation.* ~ ("+" | "-") ~ TypeParam
     //      TypeParam         ::=  (id | ‘_’) [TypeParamClause] [‘>:’ Type] [‘<:’ Type] {‘<%’ Type} {‘:’ Type}
-    lazy val TypeParam = (id | "_") ~ TypeParamClause.? ~ (">:" ~ Type).? ~ ("<:" ~ Type).? ~ ("<%" ~ Type).* ~ (":" ~ Type).*
+    def TypeParam = (id | "_") ~ TypeParamClause.? ~ (">:" ~ Type).? ~ ("<:" ~ Type).? ~ ("<%" ~ Type).* ~ (":" ~ Type).*
     //      ParamClauses      ::=  {ParamClause} [[nl] ‘(’ ‘implicit’ Params ‘)’]
-    lazy val ParamClauses = ParamClause.* ~ (nl.? ~ "(" ~ "implicit" ~ Params ~ ")").?
+    def ParamClauses = ParamClause.* ~ (nl.? ~ "(" ~ "implicit" ~ Params ~ ")").?
     //      ParamClause       ::=  [nl] ‘(’ [Params] ‘)’
-    lazy val ParamClause = nl.? ~ "(" ~ Params.? ~ ")"
+    def ParamClause = nl.? ~ "(" ~ Params.? ~ ")"
     //      Params            ::=  Param {‘,’ Param}
-    lazy val Params = repsep(Param, ",");
+    def Params = repsep(Param, ",");
     //      Param             ::=  {Annotation} id [‘:’ ParamType] [‘=’ Expr]
-    lazy val Param = Annotation.* ~ id ~ (":" ~ ParamType).? ~ ("=" ~ Expr).?
+    def Param = Annotation.* ~ id ~ (":" ~ ParamType).? ~ ("=" ~ Expr).?
     //      ParamType         ::=  Type  |  ‘=>’ Type  |  Type ‘*’
-    lazy val ParamType = Type | "=>" ~ Type | Type ~ "*"
+    def ParamType = Type | "=>" ~ Type | Type ~ "*"
     //      ClassParamClauses ::=  {ClassParamClause}  [[nl] ‘(’ ‘implicit’ ClassParams ‘)’]
-    lazy val ClassParamClauses = ClassParamClause.* ~ (nl.? ~ "(" ~ "implicit" ~ ClassParams ~ ")").?
+    def ClassParamClauses = ClassParamClause.* ~ (nl.? ~ "(" ~ "implicit" ~ ClassParams ~ ")").?
     //      ClassParamClause  ::=  [nl] ‘(’ [ClassParams] ‘)’
-    lazy val ClassParamClause = nl.? ~ "(" ~ ClassParams.? ~ ")"
+    def ClassParamClause = nl.? ~ "(" ~ ClassParams.? ~ ")"
     //      ClassParams       ::=  ClassParam {‘,’ ClassParam}
-    lazy val ClassParams = repsep(ClassParam, ",")
+    def ClassParams = repsep(ClassParam, ",")
     //      ClassParam        ::=  {Annotation} {Modifier} [(`val' | `var')]  id ‘:’ ParamType [‘=’ Expr]
-    lazy val ClassParam = Annotation.* ~ Modifier.* ~ ("val" | "var").? ~ id ~ ":" ~ ParamType ~ ("=" ~ Expr).?
+    def ClassParam = Annotation.* ~ Modifier.* ~ ("val" | "var").? ~ id ~ ":" ~ ParamType ~ ("=" ~ Expr).?
     //      Bindings          ::=  ‘(’ Binding {‘,’ Binding} ‘)’
-    lazy val Bindings = "(" ~ repsep(Binding, ",") ~ ")"
+    def Bindings = "(" ~ repsep(Binding, ",") ~ ")"
     //      Binding           ::=  (id | ‘_’) [‘:’ Type]
-    lazy val Binding = (id | "_") ~ (":" ~ Type).?
+    def Binding = (id | "_") ~ (":" ~ Type).?
 
     //      Modifier          ::=  LocalModifier  |  AccessModifier  |  ‘override’
-    lazy val Modifier = LocalModifier | AccessModifier | "override"
+    def Modifier = LocalModifier | AccessModifier | "override"
     //      LocalModifier     ::=  ‘abstract’  |  ‘final’  |  ‘sealed’  |  ‘implicit’  |  ‘lazy’
-    lazy val LocalModifier = "abstract" | "final" | "sealed" | "implicit" | "lazy"
+    def LocalModifier = "abstract" | "final" | "sealed" | "implicit" | "lazy"
     //      AccessModifier    ::=  (‘private’ | ‘protected’) [AccessQualifier]
-    lazy val AccessModifier: Parser[Any] = ("private" | "protected") ~ AccessModifier.?
+    def AccessModifier: Parser[Any] = ("private" | "protected") ~ AccessModifier.?
     //      AccessQualifier   ::=  ‘[’ (id | ‘this’) ‘]’
-    lazy val AccessQualifier = "[" ~ (id | "this") ~ "]"
+    def AccessQualifier = "[" ~ (id | "this") ~ "]"
 
     //      Annotation        ::=  ‘@’ SimpleType {ArgumentExprs}
-    lazy val Annotation = "@" ~ SimpleType ~ ArgumentExprs.*
+    def Annotation = "@" ~ SimpleType ~ ArgumentExprs.*
     //      ConstrAnnotation  ::=  ‘@’ SimpleType ArgumentExprs
-    lazy val ConstrAnnotation = "@" ~ SimpleType ~ ArgumentExprs
+    def ConstrAnnotation = "@" ~ SimpleType ~ ArgumentExprs
 
     //      TemplateBody      ::=  [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
-    lazy val TemplateBody = nl.? ~ "{" ~ SelfType.? ~ repsep(TemplateStat, semi) ~ "}"
+    def TemplateBody = nl.? ~ "{" ~ SelfType.? ~ repsep(TemplateStat, semi) ~ "}"
     //      TemplateStat      ::=  Import  |  {Annotation [nl]} {Modifier} Def  |  {Annotation [nl]} {Modifier} Dcl  |  Expr  |
-    lazy val TemplateStat: Parser[Any] = Import | (Annotation ~ nl.?).* ~ Modifier.* ~ Def | (Annotation | nl.?).* ~ Modifier.* ~ Dcl | Expr | ""
+    def TemplateStat: Parser[Any] = Import | (Annotation ~ nl.?).* ~ Modifier.* ~ Def | (Annotation | nl.?).* ~ Modifier.* ~ Dcl | Expr | ""
     //      SelfType          ::=  id [‘:’ Type] ‘=>’   |  ‘this’ ‘:’ Type ‘=>’
-    lazy val SelfType = id ~ (":" ~ Type).? ~ "=>" | "this" ~ ":" ~ Type ~ "=>"
+    def SelfType = id ~ (":" ~ Type).? ~ "=>" | "this" ~ ":" ~ Type ~ "=>"
 
     //      Import            ::=  ‘import’ ImportExpr {‘,’ ImportExpr}
-    lazy val Import = "import" ~ repsep(ImportExpr, ",")
+    def Import = "import" ~ repsep(ImportExpr, ",")
     //      ImportExpr        ::=  StableId ‘.’ (id | ‘_’ | ImportSelectors)
-    lazy val ImportExpr = StableId ~ "." ~ (id | "_" | ImportSelector)
+    def ImportExpr = StableId ~ "." ~ (id | "_" | ImportSelector)
     //      ImportSelectors   ::=  ‘{’ {ImportSelector ‘,’} (ImportSelector | ‘_’) ‘}’
-    lazy val ImportSelectors: Parser[Any] = "{" ~ (ImportSelectors ~ ",").* ~ (ImportSelector | "_") ~ "}"
+    def ImportSelectors: Parser[Any] = "{" ~ (ImportSelectors ~ ",").* ~ (ImportSelector | "_") ~ "}"
     //      ImportSelector    ::=  id [‘=>’ id | ‘=>’ ‘_’]
-    lazy val ImportSelector = id ~ ("=>" ~ id | "=>" ~ "_").?
+    def ImportSelector = id ~ ("=>" ~ id | "=>" ~ "_").?
 
     //      Dcl               ::=  ‘val’ ValDcl  |  ‘var’ VarDcl  |  ‘def’ FunDcl  |  ‘type’ {nl} TypeDcl
-    lazy val Dcl = "val" ~ ValDcl | "var" ~ VarDcl | "def" ~ FunDcl | "type" ~ nl.* ~ TypeDcl
+    def Dcl = "val" ~ ValDcl | "var" ~ VarDcl | "def" ~ FunDcl | "type" ~ nl.* ~ TypeDcl
 
     //      ValDcl            ::=  ids ‘:’ Type
-    lazy val ValDcl = ids ~ ":" ~ Type
+    def ValDcl = ids ~ ":" ~ Type
     //      VarDcl            ::=  ids ‘:’ Type
-    lazy val VarDcl = ids ~ ":" ~ Type
+    def VarDcl = ids ~ ":" ~ Type
     //      FunDcl            ::=  FunSig [‘:’ Type]
-    lazy val FunDcl = FunSig ~ (":" ~ Type).?
+    def FunDcl = FunSig ~ (":" ~ Type).?
     //      FunSig            ::=  id [FunTypeParamClause] ParamClauses
-    lazy val FunSig = id ~ FunTypeParamClause.? ~ ParamClauses
+    def FunSig = id ~ FunTypeParamClause.? ~ ParamClauses
     //        TypeDcl           ::=  id [TypeParamClause] [‘>:’ Type] [‘<:’ Type]
-    lazy val TypeDcl = id ~ TypeParamClause.? ~ (">:" ~ Type).? ~ ("<:" ~ Type)
+    def TypeDcl = id ~ TypeParamClause.? ~ (">:" ~ Type).? ~ ("<:" ~ Type)
 
     //      PatVarDef         ::=  ‘val’ PatDef  |  ‘var’ VarDef
-    lazy val PatVarDef = "val" ~ PatDef | "var" ~ VarDef
+    def PatVarDef = "val" ~ PatDef | "var" ~ VarDef
     //      Def               ::=  PatVarDef   |  ‘def’ FunDef   |  ‘type’ {nl} TypeDef  |  TmplDef
-    lazy val Def = PatVarDef | "def" ~ FunDef | "type" ~ nl.* ~ TypeDef | TmplDef
+    def Def = PatVarDef | "def" ~ FunDef | "type" ~ nl.* ~ TypeDef | TmplDef
     //        PatDef            ::=  Pattern2 {‘,’ Pattern2} [‘:’ Type] ‘=’ Expr
-    lazy val PatDef = repsep(Pattern2, ",") ~ (":" ~ Type).? ~ "=" ~ Expr
+    def PatDef = repsep(Pattern2, ",") ~ (":" ~ Type).? ~ "=" ~ Expr
     //      VarDef            ::=  PatDef  |  ids ‘:’ Type ‘=’ ‘_’
-    lazy val VarDef = PatDef | ids ~ ":" ~ Type ~ "=" ~ "_"
+    def VarDef = PatDef | ids ~ ":" ~ Type ~ "=" ~ "_"
     //      FunDef            ::=  FunSig [‘:’ Type] ‘=’ Expr   |  FunSig [nl] ‘{’ Block ‘}’
     //      |  ‘this’ ParamClause ParamClauses   (‘=’ ConstrExpr | [nl] ConstrBlock)
-    lazy val FunDef: Parser[Any] = FunSig ~ (":" ~ Type).? ~ "=" ~ Expr | FunSig ~ nl.? ~ "{" ~ Block ~ "}" |
+    def FunDef: Parser[Any] = FunSig ~ (":" ~ Type).? ~ "=" ~ Expr | FunSig ~ nl.? ~ "{" ~ Block ~ "}" |
       "this" ~ ParamClause ~ ParamClauses ~ ("=" ~ ConstrExpr | nl.? ~ ConstrBlock)
     //      TypeDef           ::=  id [TypeParamClause] ‘=’ Type
-    lazy val TypeDef = id ~ TypeParamClause.? ~ "=" ~ Type
+    def TypeDef = id ~ TypeParamClause.? ~ "=" ~ Type
 
     //      TmplDef           ::=  [‘case’] ‘class’ ClassDef  |  [‘case’] ‘object’ ObjectDef  |  ‘trait’ TraitDef
-    lazy val TmplDef = "case".? ~ "class".? ~ ClassDef | "case".? ~ "object" ~ ObjectDef | "trait" ~ TraitDef
+    def TmplDef = "case".? ~ "class".? ~ ClassDef | "case".? ~ "object" ~ ObjectDef | "trait" ~ TraitDef
     //      ClassDef          ::=  id [TypeParamClause] {ConstrAnnotation} [AccessModifier] ClassParamClauses ClassTemplateOpt
-    lazy val ClassDef = id ~ TypeParamClause.? ~ ConstrAnnotation.* ~ AccessModifier.? ~ ClassParamClauses ~ ClassTemplateOpt
+    def ClassDef = id ~ TypeParamClause.? ~ ConstrAnnotation.* ~ AccessModifier.? ~ ClassParamClauses ~ ClassTemplateOpt
     //        TraitDef          ::=  id [TypeParamClause] TraitTemplateOpt
-    lazy val TraitDef = id ~ TypeParamClause.? ~ TraitTemplateOpt
+    def TraitDef = id ~ TypeParamClause.? ~ TraitTemplateOpt
     //        ObjectDef         ::=  id ClassTemplateOpt
-    lazy val ObjectDef = id ~ ClassTemplateOpt
+    def ObjectDef = id ~ ClassTemplateOpt
     //        ClassTemplateOpt  ::=  ‘extends’ ClassTemplate | [[‘extends’] TemplateBody]
-    lazy val ClassTemplateOpt = "extends" ~ ClassTemplate | "extends".? ~ TemplateBody
+    def ClassTemplateOpt = "extends" ~ ClassTemplate | "extends".? ~ TemplateBody
     //      TraitTemplateOpt  ::=  ‘extends’ TraitTemplate | [[‘extends’] TemplateBody]
-    lazy val TraitTemplateOpt = "extends" ~ TraitTemplate | "extends".? ~ TemplateBody
+    def TraitTemplateOpt = "extends" ~ TraitTemplate | "extends".? ~ TemplateBody
     //      ClassTemplate     ::=  [EarlyDefs] ClassParents [TemplateBody]
-    lazy val ClassTemplate = EarlyDefs.? ~ ClassParents ~ TemplateBody.?
+    def ClassTemplate = EarlyDefs.? ~ ClassParents ~ TemplateBody.?
     //      TraitTemplate     ::=  [EarlyDefs] TraitParents [TemplateBody]
-    lazy val TraitTemplate = EarlyDefs.? ~ TraitParents ~ TemplateBody.?
+    def TraitTemplate = EarlyDefs.? ~ TraitParents ~ TemplateBody.?
     //      ClassParents      ::=  Constr {‘with’ AnnotType}
-    lazy val ClassParents = Constr ~ ("with".? ~ AnnotType).*
+    def ClassParents = Constr ~ ("with".? ~ AnnotType).*
     //      TraitParents      ::=  AnnotType {‘with’ AnnotType}
-    lazy val TraitParents = AnnotType ~ ("with" ~ AnnotType).*
+    def TraitParents = AnnotType ~ ("with" ~ AnnotType).*
     //      Constr            ::=  AnnotType {ArgumentExprs}
-    lazy val Constr: Parser[Any] = AnnotType ~ ArgumentExprs.*
+    def Constr: Parser[Any] = AnnotType ~ ArgumentExprs.*
     //      EarlyDefs         ::= ‘{’ [EarlyDef {semi EarlyDef}] ‘}’ ‘with’
-    lazy val EarlyDefs = "{" ~ repsep(EarlyDef, "semi") ~ "}" ~ "with"
+    def EarlyDefs = "{" ~ repsep(EarlyDef, "semi") ~ "}" ~ "with"
     //      EarlyDef          ::=  {Annotation [nl]} {Modifier} PatVarDef
-    lazy val EarlyDef: Parser[Any] = (Annotation ~ nl.?).* ~ Modifier.* ~ PatVarDef
+    def EarlyDef: Parser[Any] = (Annotation ~ nl.?).* ~ Modifier.* ~ PatVarDef
 
     //      ConstrExpr        ::=  SelfInvocation  |  ConstrBlock
-    lazy val ConstrExpr = SelfInvocation
+    def ConstrExpr = SelfInvocation
     //        ConstrBlock       ::=  ‘{’ SelfInvocation {semi BlockStat} ‘}’
-    lazy val ConstrBlock = "{" ~ SelfInvocation ~ (semi ~ BlockStat).* ~ "}"
+    def ConstrBlock = "{" ~ SelfInvocation ~ (semi ~ BlockStat).* ~ "}"
     //      SelfInvocation    ::=  ‘this’ ArgumentExprs {ArgumentExprs}
-    lazy val SelfInvocation = "this" ~ ArgumentExprs.+
+    def SelfInvocation = "this" ~ ArgumentExprs.+
 
     //      TopStatSeq        ::=  TopStat {semi TopStat}
-    lazy val TopStatSeq: Parser[Any] = repsep(TopStat, semi)
+    def TopStatSeq: Parser[Any] = repsep(TopStat, semi)
     //      TopStat           ::=  {Annotation [nl]} {Modifier} TmplDef  |  Import  |  Packaging  |  PackageObject  |
-    lazy val TopStat = (Annotation ~ nl.?).* ~ Modifier.* ~ TmplDef | Import | Packaging | PackageObject | ""
+    def TopStat = (Annotation ~ nl.?).* ~ Modifier.* ~ TmplDef | Import | Packaging | PackageObject | ""
     //      Packaging         ::=  ‘package’ QualId [nl] ‘{’ TopStatSeq ‘}’
-    lazy val Packaging = "package" | QualId ~ nl.? ~ "{" ~ TopStatSeq ~ "}"
+    def Packaging = "package" | QualId ~ nl.? ~ "{" ~ TopStatSeq ~ "}"
     //      PackageObject     ::=  ‘package’ ‘object’ ObjectDef
-    lazy val PackageObject = "package" ~ "object" ~ ObjectDef
+    def PackageObject = "package" ~ "object" ~ ObjectDef
 
     //      CompilationUnit   ::=  {‘package’ QualId semi} TopStatSeq
-    lazy val CompilationUnit = ("package" ~ QualId ~ semi).* ~ TopStatSeq
+    def CompilationUnit = ("package" ~ QualId ~ semi).* ~ TopStatSeq
 
 
   }
@@ -377,81 +378,81 @@ object ScalaParser extends ParserUtil {
   object XmlExpressions {
 
     // XmlExpr ::= XmlContent {Element}
-    lazy val XmlExpr = XmlContent ~ Element.*
+    def XmlExpr = XmlContent ~ Element.*
 
     //    Element       ::=    EmptyElemTag   |    STag Content ETag
-    lazy val Element = EmptyElemTag | STag ~ Content ~ ETag
+    def Element = EmptyElemTag | STag ~ Content ~ ETag
 
     //    EmptyElemTag  ::=    ‘<’ Name {S Attribute} [S] ‘/>’
-    lazy val EmptyElemTag = "<" ~ Name ~ (S ~ Attribute).* ~ S.? ~ "/>"
+    def EmptyElemTag = "<" ~ Name ~ (S ~ Attribute).* ~ S.? ~ "/>"
 
     //    STag          ::=    ‘<’ Name {S Attribute} [S] ‘>’
-    lazy val STag = "<" ~ Name ~ (S ~ Attribute).* ~ S.? ~ ">"
+    def STag = "<" ~ Name ~ (S ~ Attribute).* ~ S.? ~ ">"
     //    ETag          ::=    ‘</’ Name [S] ‘>’
-    lazy val ETag = "</" ~ Name ~ S.? ~ ">"
+    def ETag = "</" ~ Name ~ S.? ~ ">"
     //    Content       ::=    [CharData] {Content1 [CharData]}
-    lazy val Content = CharData.? ~ (Content1 ~ CharData.?).*
+    def Content = CharData.? ~ (Content1 ~ CharData.?).*
     //    Content1      ::=    XmlContent    |    Reference    |    ScalaExpr
-    lazy val Content1 = XmlContent | Reference | ScalaExpr
+    def Content1 = XmlContent | Reference | ScalaExpr
     //      XmlContent    ::=    Element    |    CDSect     |    PI     |    Comment
-    lazy val XmlContent: Parser[_] = ??? // Element | CDSect | PI | Comment
+    def XmlContent: Parser[_] = ??? // Element | CDSect | PI | Comment
 
     //    Attribute  ::=    Name Eq AttValue
-    lazy val Attribute: Parser[_] = ??? // Name ~ Eq ~ AttValue
+    def Attribute: Parser[_] = ??? // Name ~ Eq ~ AttValue
 
     //    AttValue      ::=    ‘"’ {CharQ | CharRef} ‘"’   |    ‘'’ {CharA | CharRef} ‘'’   |    ScalaExpr
-    lazy val AttValue: Parser[_] = ??? // "\"" ~ (CharQ | CharRef).* ~ "\"" | "\"" ~ (CharA | CharRef).* ~ "\"" | ScalaExpr
+    def AttValue: Parser[_] = ??? // "\"" ~ (CharQ | CharRef).* ~ "\"" | "\"" ~ (CharA | CharRef).* ~ "\"" | ScalaExpr
 
     //    ScalaExpr     ::=    Block
-    lazy val ScalaExpr: Parser[_] = ??? // Block
+    def ScalaExpr: Parser[_] = ??? // Block
 
     //    CharData      ::=   { CharNoRef }  without {CharNoRef}`{'CharB {CharNoRef}  and without {CharNoRef}`]]>'{CharNoRef}
-    lazy val CharData: Parser[_] = ??? // CharaNoRef.*
+    def CharData: Parser[_] = ??? // CharaNoRef.*
 
     //    BaseChar, Char, Comment, CombiningChar, Ideographic, NameChar, S, Reference ::=  “as in W3C XML”
-    lazy val BaseChar: Parser[_] = ???
-    lazy val Char: Parser[_] = ???
-    lazy val Comment: Parser[_] = ???
-    lazy val CombiningChar: Parser[_] = ???
-    lazy val Ideographic: Parser[_] = ???
-    lazy val NameChar: Parser[_] = ???
-    lazy val S: Parser[_] = ???
-    lazy val Reference: Parser[_] = ???
+    def BaseChar: Parser[_] = ???
+    def Char: Parser[_] = ???
+    def Comment: Parser[_] = ???
+    def CombiningChar: Parser[_] = ???
+    def Ideographic: Parser[_] = ???
+    def NameChar: Parser[_] = ???
+    def S: Parser[_] = ???
+    def Reference: Parser[_] = ???
 
     //    Char1         ::=  Char  without ‘<’ | ‘&’
-    lazy val Char1: Parser[_] = ???
+    def Char1: Parser[_] = ???
     //    CharQ         ::=  Char1  without ‘"’
-    lazy val CharQ: Parser[_] = ???
+    def CharQ: Parser[_] = ???
     //    CharA         ::=  Char1  without ‘'’
-    lazy val charA: Parser[_] = ???
+    def charA: Parser[_] = ???
     //    CharB         ::=  Char1  without ‘{’
-    lazy val CharB: Parser[_] = ???
+    def CharB: Parser[_] = ???
 
     //      Name          ::=  XNameStart {NameChar}
-    lazy val Name = XNameStart ~ NameChar.*
+    def Name = XNameStart ~ NameChar.*
 
     //      XNameStart    ::= ‘_’ | BaseChar | Ideographic  (as in W3C XML, but without  ‘:’)
-    lazy val XNameStart = "_" | BaseChar | Ideographic
+    def XNameStart = "_" | BaseChar | Ideographic
 
     // XmlPattern  ::= ElementPattern
-    lazy val XmlPattern = ElementPattern
+    def XmlPattern = ElementPattern
 
     //    ElemPattern   ::=    EmptyElemTagP     |    STagP ContentP ETagP
-    lazy val ElementPattern: Parser[_] = EmptyElemTagP | STagP ~ ContentP ~ ETagP
+    def ElementPattern: Parser[_] = EmptyElemTagP | STagP ~ ContentP ~ ETagP
 
     //    EmptyElemTagP ::=    ‘<’  Name [S] ‘/>’
-    lazy val EmptyElemTagP = "<" ~ Name ~ S.? ~ "/>"
+    def EmptyElemTagP = "<" ~ Name ~ S.? ~ "/>"
     //    STagP         ::=    ‘<’  Name [S] ‘>’
-    lazy val STagP = "<" ~ Name ~ S.? ~ ">"
+    def STagP = "<" ~ Name ~ S.? ~ ">"
     //    ETagP         ::=    ‘</’ Name [S] ‘>’
-    lazy val ETagP = "</" ~ Name ~ S.? ~ ">"
+    def ETagP = "</" ~ Name ~ S.? ~ ">"
     //    ContentP      ::=    [CharData] {(ElemPattern|ScalaPatterns) [CharData]}
-    lazy val ContentP = CharData.? ~ ((ElementPattern | ScalaPatterns) ~ CharData.?).*
+    def ContentP = CharData.? ~ ((ElementPattern | ScalaPatterns) ~ CharData.?).*
     //    ContentP1     ::=    ElemPattern  |  Reference  |  CDSect   |  PI   |   Comment   |   ScalaPatterns
-    lazy val ContentP1: Parser[_] = ???
+    def ContentP1: Parser[_] = ???
     // ElemPattern | Reference | CDSect | PI | Comment | ScalaPatterns
     //      ScalaPatterns ::=    ‘{’ Patterns ‘}’
-    lazy val ScalaPatterns: Parser[_] = ??? // "{" ~ Patterns ~ "}"
+    def ScalaPatterns: Parser[_] = ??? // "{" ~ Patterns ~ "}"
 
   }
 

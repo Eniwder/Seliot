@@ -9,7 +9,7 @@ import scalaz.syntax.either._
   */
 class ContextFreeSyntaxTest extends FlatSpec with Matchers {
 
-  import parser.ScalaParser.LexicalSyntax._
+  import parser.ScalaParser.ContextFreeSyntax._
 
   "Literal Parser" should "IntegerLiteral parsed" in {
     ScalaParser.run(Literal, "12345") should be("12345".right)
@@ -57,5 +57,10 @@ class ContextFreeSyntaxTest extends FlatSpec with Matchers {
   it should "null Literal parsed" in {
     ScalaParser.run(Literal, "null") should be("null".right)
   }
+
+  "aaa" should "123" in{
+    ParserSample("128") should be ("")
+  }
+
 
 }
