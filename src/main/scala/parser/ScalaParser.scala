@@ -68,16 +68,18 @@ object ScalaParser extends ParserUtil {
     // id               ::=  plainid | ‘`’ stringLiteral ‘`’
     def id = plainid | "`" ~ stringLiteral ~ "`"
     // idrest           ::=  {letter | digit} [‘_’ op]
-    def idrest = letter | digit.* ~ ("_" ~ op).?
+    def idrest = (letter | digit).* ~ ("_" ~ op).?
 
     // integerLiteral   ::=  (decimalNumeral | hexNumeral) [‘L’ | ‘l’]
-    def integerLiteral = (decimalNumeral | hexNumeral) ~ ("L" | "l").?
+    def integerLiteral = (hexNumeral | decimalNumeral) ~ ("L" | "l").?
     // decimalNumeral   ::=  ‘0’ | nonZeroDigit {digit}
     def decimalNumeral = "0" | nonZeroDigit ~ digit.*
-    // hexNumeral       ::=  ‘0’ (‘x’ | ‘X’) hexDigit {hexDigit}
-    def hexNumeral = "0" ~ ("x" | "X") ~ UnicodeEscapes.hexDigit ~ UnicodeEscapes.hexDigit.*
+    // hexNumeral         ::=  ‘0’ (‘x’ | ‘X’) hexDigit {hexDigit}
+    def hexNumeral =
+      """0[x|X]""".r ~ UnicodeEscapes.hexDigit ~ UnicodeEscapes.hexDigit.*
     // nonZeroDigit     ::=  ‘1’ | … | ‘9’
-    def nonZeroDigit = """[1-9]""".r
+    def nonZeroDigit =
+      """[1-9]""".r
 
     // floatingPointLiteral  ::=  digit {digit} ‘.’ digit {digit} [exponentPart] [floatType]
     //                           |  ‘.’ digit {digit} [exponentPart] [floatType]  |  digit {digit} exponentPart [floatType]
@@ -94,15 +96,17 @@ object ScalaParser extends ParserUtil {
     def booleanLiteral = "true" | "false"
 
     // characterLiteral ::=  ‘'’ (charNoQuoteOrNewline | UnicodeEscape | charEscapeSeq) ‘'’
-    def characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
-
+    //def characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
+    def characterLiteral = """'([\u0020-\u0026]|[\u0028-\u007F]|[0-9|a-f|A-F]|\\(b|t|n|f|r|"|'|\\))'""".r
+    // "\\" ~ ("b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\")
     // stringLiteral    ::=  ‘"’ {stringElement} ‘"’  |  ‘"""’ multiLineChars ‘"""’
-    def stringLiteral = "\"" ~ stringElement.* ~ "\"" | "\"\"\"" ~ multiLineChars ~ "\"\"\""
+    def stringLiteral = "\"\"\"" ~ multiLineChars ~ "\"\"\"" | "\"" ~ stringElement.* ~ "\""
 
     // stringElement    ::=  charNoDoubleQuoteOrNewline  |  UnicodeEscape    |  charEscapeSeq
     def stringElement = """[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r | UnicodeEscapes.UnicodeEscape | charEscapeSeq
-    // multiLineChars   ::=  {[‘"’] [‘"’] charNoDoubleQuote} {‘"’}
-    def multiLineChars = ("\"".? ~ "\"".? ~ ("""[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r)).* ~ rep("\"")
+    // multiLineChars   ::=  {[‘"’] [‘"’] charNoDoubleQuote} TODO {‘"’}
+    def multiLineChars = ("\"".? ~ "\"".? ~ ("""[\u0020-\u0021]""".r | """[\u0023-\u007F]""".r)).*
+    /* ~ rep("\"") */
     // symbolLiteral    ::=  ‘'’ plainid
     def symbolLiteral = "\'" ~ plainid
 
@@ -123,8 +127,8 @@ object ScalaParser extends ParserUtil {
 
     //    Literal           ::=  [‘-’] integerLiteral  |  [‘-’] floatingPointLiteral  |  booleanLiteral
     //      |  characterLiteral  |  stringLiteral  |  symbolLiteral   |  ‘null’
-    def Literal = ("-".? ~ integerLiteral) | ("-".? ~ floatingPointLiteral) | booleanLiteral |
-      characterLiteral | stringLiteral | symbolLiteral | "null"
+    def Literal = ("-".? ~ floatingPointLiteral) | ("-".? ~ integerLiteral) | booleanLiteral |
+      stringLiteral | characterLiteral | symbolLiteral | "null"
 
     //    QualId            ::=  id {‘.’ id}
     def QualId = repsep(id, ".")
@@ -248,7 +252,7 @@ object ScalaParser extends ParserUtil {
     //      ParamClause       ::=  [nl] ‘(’ [Params] ‘)’
     def ParamClause = nl.? ~ "(" ~ Params.? ~ ")"
     //      Params            ::=  Param {‘,’ Param}
-    def Params = repsep(Param, ",");
+    def Params = repsep(Param, ",")
     //      Param             ::=  {Annotation} id [‘:’ ParamType] [‘=’ Expr]
     def Param = Annotation.* ~ id ~ (":" ~ ParamType).? ~ ("=" ~ Expr).?
     //      ParamType         ::=  Type  |  ‘=>’ Type  |  Type ‘*’
