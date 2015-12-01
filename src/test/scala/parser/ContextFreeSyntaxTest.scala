@@ -50,6 +50,10 @@ class ContextFreeSyntaxTest extends FlatSpec with Matchers with Parsers {
     shouldParse(Literal, "null")
   }
 
+  "Def Parser" should "def func(a:Int) = 1+2" in {
+    shouldParse(Def,"def func(a:Int) = 1")
+  }
+
   def shouldParse(expr: ScalaParser.Parser[Any], in: String) {
     val result = ScalaParser.run(expr, in)
     result match {

@@ -96,8 +96,8 @@ object ScalaParser extends ParserUtil {
     def booleanLiteral = "true" | "false"
 
     // characterLiteral ::=  ‘'’ (charNoQuoteOrNewline | UnicodeEscape | charEscapeSeq) ‘'’
-    //def characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
-    def characterLiteral = """'([\u0020-\u0026]|[\u0028-\u007F]|[0-9|a-f|A-F]|\\(b|t|n|f|r|"|'|\\))'""".r
+    def characterLiteral = "\'" ~ ("""[\u0020-\u0026]""".r | """[\u0028-\u007F]""".r | UnicodeEscapes.hexDigit | charEscapeSeq) ~ "\'"
+    //def characterLiteral = """'([\u0020-\u0026]|[\u0028-\u007F]|[0-9|a-f|A-F]|\\(b|t|n|f|r|"|'|\\))'""".r
     // "\\" ~ ("b" | "t" | "n" | "f" | "r" | "\"" | "\'" | "\\")
     // stringLiteral    ::=  ‘"’ {stringElement} ‘"’  |  ‘"""’ multiLineChars ‘"""’
     def stringLiteral = "\"\"\"" ~ multiLineChars ~ "\"\"\"" | "\"" ~ stringElement.* ~ "\""
@@ -157,8 +157,8 @@ object ScalaParser extends ParserUtil {
     def AnnotType: Parser[Any] = SimpleType ~ AnnotType.*
     //    SimpleType        ::=  SimpleType TypeArgs   |  SimpleType ‘#’ id
     //    |  StableId   |  Path ‘.’ ‘type’   |  ‘(’ Types ‘)’
-    def SimpleType: Parser[Any] = SimpleType ~ TypeArgs | SimpleType ~ "#" ~ id |
-      StableId | Path ~ "." ~ "type" | "(" ~ Types ~ ")"
+    def SimpleType: Parser[Any] = StableId | Path ~ "." ~ "type" | "(" ~ Types ~ ")" |  SimpleType ~ (TypeArgs | SimpleType ~ "#" ~ id)
+
     //    TypeArgs          ::=  ‘[’ Types ‘]’
     def TypeArgs = "[" ~ Types ~ "]"
     //    Types             ::=  Type {‘,’ Type}
@@ -271,9 +271,9 @@ object ScalaParser extends ParserUtil {
     def Binding = (id | "_") ~ (":" ~ Type).?
 
     //      Modifier          ::=  LocalModifier  |  AccessModifier  |  ‘override’
-    def Modifier = LocalModifier | AccessModifier | "override"
     //      LocalModifier     ::=  ‘abstract’  |  ‘final’  |  ‘sealed’  |  ‘implicit’  |  ‘lazy’
     def LocalModifier = "abstract" | "final" | "sealed" | "implicit" | "lazy"
+    def Modifier = LocalModifier | AccessModifier | "override"
     //      AccessModifier    ::=  (‘private’ | ‘protected’) [AccessQualifier]
     def AccessModifier: Parser[Any] = ("private" | "protected") ~ AccessModifier.?
     //      AccessQualifier   ::=  ‘[’ (id | ‘this’) ‘]’
@@ -324,7 +324,7 @@ object ScalaParser extends ParserUtil {
     def VarDef = PatDef | ids ~ ":" ~ Type ~ "=" ~ "_"
     //      FunDef            ::=  FunSig [‘:’ Type] ‘=’ Expr   |  FunSig [nl] ‘{’ Block ‘}’
     //      |  ‘this’ ParamClause ParamClauses   (‘=’ ConstrExpr | [nl] ConstrBlock)
-    def FunDef: Parser[Any] = FunSig ~ (":" ~ Type).? ~ "=" ~ Expr | FunSig ~ nl.? ~ "{" ~ Block ~ "}" |
+    def FunDef: Parser[Any] = FunSig ~ opt(":" ~ Type) ~ "=" ~ Expr | FunSig ~ nl.? ~ "{" ~ Block ~ "}" |
       "this" ~ ParamClause ~ ParamClauses ~ ("=" ~ ConstrExpr | nl.? ~ ConstrBlock)
     //      TypeDef           ::=  id [TypeParamClause] ‘=’ Type
     def TypeDef = id ~ TypeParamClause.? ~ "=" ~ Type

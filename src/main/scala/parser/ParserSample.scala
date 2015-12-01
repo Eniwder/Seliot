@@ -30,7 +30,7 @@ object ParserSample extends RegexParsers {
 
   def cc: Parser[Any] = aa | bb
 
-  def dd: Parser[Any] = aa | xx| bb
+  def dd: Parser[Any] = aa | xx | bb
 
   def apply(input: String): Either[String, String] = parseAll(dd, input) match {
     case Success(nucleobases, _) => Right(nucleobases.toString)
