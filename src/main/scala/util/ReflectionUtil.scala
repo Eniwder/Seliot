@@ -3,7 +3,7 @@ package util
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => uni}
 
-trait ReflectionWrapper {
+trait ReflectionUtil {
 
   // メソッド呼び出し
   def invokeMethod[T: uni.TypeTag : ClassTag, B](instance: T, methodName: String, args: Any*): B = {
@@ -31,4 +31,7 @@ trait ReflectionWrapper {
     val fieldMirror = instanceMirror.reflectField(getterSymbol)
     fieldMirror.get.asInstanceOf[B]
   }
+
+  val cm = uni.runtimeMirror(getClass.getClassLoader)
+
 }

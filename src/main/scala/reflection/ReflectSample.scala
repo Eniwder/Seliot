@@ -1,10 +1,10 @@
 package reflection
 
-import util.ReflectionWrapper
+import util.ReflectionUtil
 
 import scala.reflect.runtime.{universe => uni}
 
-object ReflectSample extends App with ReflectionWrapper {
+object ReflectSample extends App with ReflectionUtil {
 
   def getType[A: uni.TypeTag](x: A): uni.Type = uni.typeOf[A]
 
