@@ -11,7 +11,7 @@ object ReflectionSample extends App {
     class Sample {
 //    val im = 1
 //    val mu = "myu myu myu"
-      sayHello("Sanju",3)
+      sayHello("Sanju", 3)
       def sayHello(name: String, n: Int) {
         println(s"Hello! $name " * n)
       }
@@ -24,7 +24,7 @@ object ReflectionSample extends App {
 
   print
 
-  def print: Unit = {
+  def print {
     println(show(tree))
     println(showRaw(tree))
   }
