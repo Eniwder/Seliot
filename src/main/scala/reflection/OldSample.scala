@@ -4,7 +4,7 @@ import util.ReflectionUtil
 
 import scala.reflect.runtime.{universe => uni}
 
-object ReflectSample extends App with ReflectionUtil {
+object OldSample extends App with ReflectionUtil {
 
   def getType[A: uni.TypeTag](x: A): uni.Type = uni.typeOf[A]
 
