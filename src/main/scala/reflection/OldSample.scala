@@ -28,6 +28,9 @@ object OldSample extends App with ReflectionUtil {
       .asMethod
       .getter
       .asMethod
+  println("////////////")
+  println(uni.definitions.StringClass.pos )
+  println("////////////")
 
     val muFieldMirror = instanceMirror.reflectField(muField)
     println("muFieldMirror = " + muFieldMirror.get)

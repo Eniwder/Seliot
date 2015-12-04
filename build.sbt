@@ -11,3 +11,5 @@ libraryDependencies ++= Seq("org.scala-lang" % "scala-reflect" % scalaVersion.va
   "org.scalaz" %% "scalaz-core" % "7.1.5",
   "org.scala-lang" % "scala-compiler" % scalaVersion.value
 )
+
+scalacOptions ++= Seq("-Yrangepos", "-unchecked", "-deprecation", "-feature")
