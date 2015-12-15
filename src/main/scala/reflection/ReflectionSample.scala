@@ -27,8 +27,7 @@ object ReflectionSample extends App with ReflectionUtil {
   //print
 
    MyTraverser.prettyPrint(tree)
-
-  //MyTraverser.prettyPrint(q"def a(b:Int):Int = b+1")
+  //MyTraverser.prettyPrint(q"def a(b:Int):Int = b+1"
 
   //  def print {
   //    println(tree)
@@ -90,19 +89,15 @@ object ReflectionSample extends App with ReflectionUtil {
       }
     }
 
-    def interpretImpl(c: blackbox.Context): c.Expr[String] = {
-      println("here")
-      println(c.universe.typeTag[SampleClass].tpe.typeSymbol.pos)
-      println(c.openMacros.mkString("\n"))
-      //      MyTraverser.prettyPrint(q"$a")
-      c.literal("aaa")
-    }
+//    def interpretImpl(c: blackbox.Context): c.Expr[String] = {
+//      println("here")
+//      println(c.universe.typeTag[SampleClass].tpe.typeSymbol.pos)
+//      println(c.openMacros.mkString("\n"))
+//      //      MyTraverser.prettyPrint(q"$a")
+//      c.literal("aaa")
+//    }
 
     def posImpl[T](c: blackbox.Context)(code: c.Expr[T]) = {
-      //      import c.universe._
-      //      implicit def liftq = Liftable[c.universe.Position] { p ⇒
-      //        q"(${p.point}, ${p.end})"
-      //      }
       prettyPrint(code.tree)
       c.literal(showRaw(code.tree))
     }
@@ -117,10 +112,6 @@ object ReflectionSample extends App with ReflectionUtil {
     def sayHello(name: String, n: Int) {
       println(s"Hello! $name " * n)
     }
-
-
-    def interpret: String = macro MyTraverser.interpretImpl
-
 
     def pos[T](code: T): String = macro MyTraverser.posImpl[T]
   }

@@ -2,6 +2,7 @@ package util
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => uni}
+import scala.tools.reflect.ToolBox
 
 trait ReflectionUtil {
 
@@ -33,5 +34,7 @@ trait ReflectionUtil {
   }
 
   val cm = uni.runtimeMirror(getClass.getClassLoader)
+
+  val tb = cm.mkToolBox()
 
 }

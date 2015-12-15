@@ -8,35 +8,36 @@ object OldSample extends App with ReflectionUtil {
 
   def getType[A: uni.TypeTag](x: A): uni.Type = uni.typeOf[A]
 
-    println(uni.typeOf[SampleClass])
-    println(uni.typeOf[CCSample])
-    println(getType((a: Int) => 1))
-    println(getType((a: Int) => 1.0))
+  println(uni.typeOf[SampleClass])
+  println(uni.typeOf[CCSample])
+  println(getType((a: Int) => 1))
+  println(getType((a: Int) => 1.0))
 
-    println(uni.typeOf[SampleClass].member(uni.TermName("im")))
-    println(uni.typeOf[SampleClass].member(uni.TermName("mu")))
+  println(uni.typeOf[SampleClass].member(uni.TermName("im")))
+  println(uni.typeOf[SampleClass].member(uni.TermName("mu")))
 
 
-    println(uni.typeOf[List[Int]])
-    println(uni.typeOf[List[Int]].member(uni.TermName("map")))
+  println(uni.typeOf[List[Int]])
+  println(uni.typeOf[List[Int]].member(uni.TermName("map")))
 
-    val sampleClass = new SampleClass()
-    val runtimeMirror = uni.typeTag[SampleClass].mirror
-    val instanceMirror = runtimeMirror.reflect(sampleClass)
-    val muField = uni.typeOf[SampleClass]
-      .member(uni.TermName("mu"))
-      .asMethod
-      .getter
-      .asMethod
+  val sampleClass = new SampleClass()
+  val runtimeMirror = uni.typeTag[SampleClass].mirror
+  val instanceMirror = runtimeMirror.reflect(sampleClass)
+  val muField = uni.typeOf[SampleClass]
+    .member(uni.TermName("mu"))
+    .asMethod
+    .getter
+    .asMethod
   println("////////////")
-  println(uni.definitions.StringClass.pos )
+  println(uni.definitions.StringClass.pos)
   println("////////////")
 
-    val muFieldMirror = instanceMirror.reflectField(muField)
-    println("muFieldMirror = " + muFieldMirror.get)
 
-    invokeMethod(sampleClass, "sayHello", "Shizu", 5)
-    println("im = " + getFieldValue(sampleClass, "im"))
+  val muFieldMirror = instanceMirror.reflectField(muField)
+  println("muFieldMirror = " + muFieldMirror.get)
+
+  invokeMethod(sampleClass, "sayHello", "Shizu", 5)
+  println("im = " + getFieldValue(sampleClass, "im"))
 
 }
 
