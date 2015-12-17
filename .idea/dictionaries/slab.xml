@@ -1,19 +1,32 @@
 <component name="ProjectDictionaryState">
   <dictionary name="slab">
     <words>
+      <w>aiueo</w>
+      <w>annot</w>
       <w>combinators</w>
+      <w>constr</w>
+      <w>defdef</w>
+      <w>defs</w>
+      <w>exprs</w>
       <w>forsome</w>
       <w>idrest</w>
       <w>larrow</w>
       <w>newlinecharacter</w>
       <w>opchar</w>
+      <w>patdef</w>
       <w>plainid</w>
       <w>rarrow</w>
       <w>runp</w>
       <w>scalatest</w>
+      <w>seliot</w>
       <w>supertype</w>
+      <w>tmpl</w>
+      <w>tparams</w>
+      <w>traverser</w>
       <w>varid</w>
       <w>viewbound</w>
+      <w>vparamss</w>
+      <w>xname</w>
     </words>
   </dictionary>
 </component>
