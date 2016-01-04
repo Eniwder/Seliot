@@ -38,26 +38,25 @@ object MyTraverser {
         println(showRaw(xs))
 
       case classDef@ClassDef(mods, name, tparams, impl) =>
-        println("--- enter ClassDef ---", classDef.pos)
+        println("--- enter ClassDef ---", s"$name")
         //   println(s"mod $mods")
-        println(s"tName $name")
-        println(s"line: ${classDef.pos.line} range: ${classDef.pos.column - (classDef.pos.point - classDef.pos.start) - 1} - ${classDef.pos.end - classDef.pos.start}")
-        //    println(s"tDef $tparams")
-        //    println(s"template ${showRaw(impl)}")
+        println(s"line     : ${classDef.pos.line} range: ${classDef.pos.column - (classDef.pos.point - classDef.pos.start) - 1} - ${classDef.pos.end - classDef.pos.start}")
+        println(s"tDef     : $tparams")
+        println(s"template : ${showRaw(impl)}")
         prettyPrint(impl, sp + 1)
 
       case template@Template(parents, self, body) =>
         println("--- enter Template ---", template.pos)
-        //  println(s"mod $parents")
-        //   println(s"tName $self")
-        println(s"line: ${template.pos.line} range: ${template.pos.column - (template.pos.point - template.pos.start) - 1} - ${template.pos.end - template.pos.start}")
+        println(s"mod   : $parents")
+        println(s"tName : $self")
+        println(s"line  : ${template.pos.line} range: ${template.pos.column - (template.pos.point - template.pos.start) - 1} - ${template.pos.end - template.pos.start}")
         //  println(s"tDef ${showRaw(body)}")
         body.foreach(prettyPrint(_, sp + 1))
 
       case defDef@DefDef(mods, name, tparams, vparamss, tpt, rhs) =>  // def x = ??? (val x = ???/getter/setter)
         println("--- enter DefDef ---", s"[$name]")
-        //      println(s"mods $mods")
         val prefix = if (defDef.pos.point - defDef.pos.start == 0) " // " else ""
+        println(s"$prefix mods     : $mods")
         println(s"$prefix tparams  : $tparams")
         println(s"$prefix vparamss : $vparamss")
         println(s"$prefix tpt      : $tpt")
@@ -67,14 +66,21 @@ object MyTraverser {
 
       case valDef@ValDef(mods, name, tpt, rhs) => // val x = ??? or var x = ???
         println("--- enter ValDef ---", s"[$name]")
-//        println("--- enter ValDef ---", "pos:" + valDef.pos, "focus:" + valDef.pos.focus, "point:" + valDef.pos.point,
-//          "column:" + valDef.pos.column, "line:" + valDef.pos.line, "start:" + valDef.pos.start, "end:" + valDef.pos.end, "focus:" + valDef.pos.focus, "???" +
-//            (valDef.pos.column - (valDef.pos.point - valDef.pos.start) - 1), "SOP" + valDef.pos.startOrPoint)
-        //       println(s"mods $mods")
         println(s"tpt  : $tpt")
         println(s"rhs  : $rhs")
         println(s"line : ${valDef.pos.line} range: ${valDef.pos.column - (valDef.pos.point - valDef.pos.start) - 1} - ${valDef.pos.end - valDef.pos.start}")
       //    println(showRaw(valDef))
+
+      case modDef@ModuleDef(mods, name, impl) =>
+        println("--- enter ModuleDef ---", s"[$name]")
+        println(s"mods  : $mods")
+        println(s"impl  : $impl")
+        println(s"line : ${modDef.pos.line} range: ${modDef.pos.column - (modDef.pos.point - modDef.pos.start) - 1} - ${modDef.pos.end - modDef.pos.start}")
+        prettyPrint(impl)
+
+      case apply@Apply(fun, args) =>
+        println("--- enter Apply ---", s"[$fun]")
+        println(s"args  : $args")
 
       case x =>
         println("--- enter Default ---", x)
