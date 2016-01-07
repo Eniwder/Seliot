@@ -7,6 +7,7 @@
       <w>constr</w>
       <w>defdef</w>
       <w>defs</w>
+      <w>elsep</w>
       <w>exprs</w>
       <w>forsome</w>
       <w>idrest</w>
@@ -20,6 +21,7 @@
       <w>scalatest</w>
       <w>seliot</w>
       <w>supertype</w>
+      <w>thenp</w>
       <w>tmpl</w>
       <w>tparams</w>
       <w>traverser</w>
