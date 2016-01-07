@@ -81,14 +81,15 @@ object MyTraverser {
       case ifCond@If(cond, thenp, elsep)=>
         println("--- enter If ---")
         println(s"cond  : $cond")
-        println(s"thenp : $thenp")
+        println(s"--thenp : $thenp")
         prettyPrint(thenp)
-        println(s"elsep : $elsep")
+        println(s"--elsep : $elsep")
         prettyPrint(elsep)
         println(s"line : ${ifCond.pos.line} range: ${ifCond.pos.column - (ifCond.pos.point - ifCond.pos.start) - 1} - ${ifCond.pos.end - ifCond.pos.start}")
 
       case apply@Apply(fun, args) =>
         println("--- enter Apply ---", s"[$fun]")
+        fun collect {case ap@Apply(_,_) => prettyPrint(ap)}
         println(s"args  : $args")
 
       case x =>

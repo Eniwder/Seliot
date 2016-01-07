@@ -17,7 +17,7 @@ class Test {
 
   private[this] def doubleInt2(x: Int): Int = x * 2
 
-  implicit val implInt = 5F
+  implicit val implInt = 5
 
   def curriedFunc(one: Int)(two1: String, two2: String) = two1 * one + two2
 
@@ -31,6 +31,9 @@ class Test {
     }
     innerDef(x)
   }
+
+  curriedFunc(1)("2s","3s")
+  outerDef("please print")
 
   val ifel = if(1 == 2) "a" else "b"
 
