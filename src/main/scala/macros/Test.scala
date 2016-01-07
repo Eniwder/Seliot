@@ -32,6 +32,16 @@ class Test {
     innerDef(x)
   }
 
+  val ifel = if(1 == 2) "a" else "b"
+
+  if(2 == plusVal){
+    println("in if")
+  }else if(3 == readLine().toInt){
+    println("in if else")
+  }else{
+    println("in else")
+  }
+
   class Inner {
 
   }
