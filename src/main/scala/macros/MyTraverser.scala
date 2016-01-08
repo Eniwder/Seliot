@@ -6,16 +6,16 @@ import java.io.File
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.reflect.runtime.universe._
-import scala.swing.{Button, MainFrame}
+import scala.swing.MainFrame
 
 object MyTraverser {
-  class UI(text: String) extends MainFrame {
-    title = "GUI Program #2"
-    preferredSize = new Dimension(320, 240)
-    contents = Button(text) {
-      println(text)
-    }
+
+  class AnimationWindow(tree: Any, source: String) extends MainFrame {
+    title = "Animation Window"
+    preferredSize = new Dimension(800, 600)
     visible = true
+
+
   }
 
   // tpt = type tag ?
@@ -78,7 +78,7 @@ object MyTraverser {
         println(s"line : ${modDef.pos.line} range: ${modDef.pos.column - (modDef.pos.point - modDef.pos.start) - 1} - ${modDef.pos.end - modDef.pos.start}")
         prettyPrint(impl)
 
-      case ifCond@If(cond, thenp, elsep)=>
+      case ifCond@If(cond, thenp, elsep) =>
         println("--- enter If ---")
         println(s"cond  : $cond")
         println(s"--thenp : $thenp")
@@ -89,8 +89,13 @@ object MyTraverser {
 
       case apply@Apply(fun, args) =>
         println("--- enter Apply ---", s"[$fun]")
-        fun collect {case ap@Apply(_,_) => prettyPrint(ap)}
+        fun collect { case ap@Apply(_, _) => prettyPrint(ap) }
         println(s"args  : $args")
+
+      case imprt@Import(expr, selectors) =>
+        println("--- enter Import ---")
+        println(s"expr      : $expr")
+        println(s"selectors : $selectors")
 
       case x =>
         println("--- enter Default ---", x)
@@ -98,13 +103,19 @@ object MyTraverser {
     }
   }
 
-  def interpretImpl[T](c: blackbox.Context)(code: c.Expr[T]) = {
+  def interpretImpl[T](c: blackbox.Context)(code: c.Expr[T])(raw: c.Expr[String]) = {
     prettyPrint(code.tree)
-    c.Expr(code.tree)
+    val source = raw.tree.asInstanceOf[Any] match {
+      case Literal(Constant(str)) => str
+      case _ => ""
+    }
+
+    println(source)
     new File(s"F:/Temp/Seliot/src/main/scala/macros/Out.scala").delete()
     c.literal(showRaw(code.tree))
   }
 
-  def interpret[T](code: T): String = macro MyTraverser.interpretImpl[T]
+  def interpret[T](code: T)(raw: String): String = macro MyTraverser.interpretImpl[T]
 
 }
+

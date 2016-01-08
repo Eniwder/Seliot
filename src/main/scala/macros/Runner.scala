@@ -21,6 +21,7 @@ object Runner extends App with LoanPattern with ReflectionUtil {
 
   using(new PrintWriter(s"F:/Temp/Seliot/src/main/scala/macros/$prefix.$suffix")) { o =>
     o.write( s"""|object $className{ val tree = macros.MyTraverser.interpret{$trg
+                 |}{\"\"\"$trg\"\"\"
                  |}}
     """.stripMargin)
   }
