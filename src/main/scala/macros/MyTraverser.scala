@@ -78,9 +78,9 @@ object MyTraverser {
       case ifCond@If(cond, thenp, elsep) =>
         println("--- enter If ---", s"line : ${ifCond.pos.line} range: ${ifCond.pos.column - (ifCond.pos.point - ifCond.pos.start) - 1} - ${ifCond.pos.end - ifCond.pos.start}", sp)
         println(s"cond  : $cond")
-        println(s"--thenp : $thenp")
+        print(s"--thenp : --->")
         prettyPrint(thenp, sp + 1)
-        println(s"--elsep : $elsep")
+        print(s"--elsep : --->")
         prettyPrint(elsep, sp + 1)
         println("--- Out If ---", sp)
 
@@ -97,7 +97,7 @@ object MyTraverser {
       case mat@Match(selector, cases) =>
         println("--- enter Match ---", s"line : ${mat.pos.line} range: ${mat.pos.column - (mat.pos.point - mat.pos.start) - 1} - ${mat.pos.end - mat.pos.start}")
         println(s"selector : $selector")
-        println(s"cases    : $cases")
+        print(s"cases    : --->")
         cases.foreach(prettyPrint(_, sp + 1))
 
       case caseDef@CaseDef(pat, guard, body) =>
