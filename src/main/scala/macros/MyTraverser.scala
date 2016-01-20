@@ -19,7 +19,8 @@ object MyTraverser {
 
     itp(tree)
 
-    println("agaegaegae"+classes)
+    // for debug 普段は中身が消されてるので表示されない
+    // outBlock,outCallStackをコメントアウトすれば出てくる
     for {
       clazz <- classes
       callStack <- clazz.allCallStacks.zipWithIndex
@@ -37,9 +38,9 @@ object MyTraverser {
       tree match {
         case block@Block(stats, expr) => // exprはいらない？
           println("--- enter Block ---", s"line: ${block.pos.line} range: ${block.pos.column - (block.pos.point - block.pos.start) - 1} - ${block.pos.end - block.pos.start}")
-          if(classes.length != 0)classes(0).currentCallStack.intoBlock()
+          if(classes.nonEmpty)classes(0).currentCallStack.intoBlock()
           stats.foreach(itp(_))
-          if(classes.length != 0)classes(0).currentCallStack.outBlock()
+          if(classes.nonEmpty)classes(0).currentCallStack.outBlock()
 
         case list@List(xs) =>
           println("--- enter List ---", list)
