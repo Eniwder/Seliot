@@ -1,21 +1,21 @@
 package macros
 
-import java.awt.Dimension
 import java.io.File
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.reflect.runtime.universe._
-import scala.swing.MainFrame
 
 object MyTraverser {
 
-  class AnimationWindow(tree: Any, source: String) extends MainFrame {
-    title = "Animation Window"
-    preferredSize = new Dimension(800, 600)
-    visible = true
+  val classes = scala.collection.mutable.Buffer[Class]()
+  val modules = scala.collection.mutable.Buffer[Class]()
 
-    val classes = scala.collection.mutable.Buffer[Class]()
+  class AnimationWindow(tree: Any, source: String) {// extends MainFrame {
+//    title = "Animation Window"
+//    preferredSize = new Dimension(800, 600)
+//    visible = true
+
 
     itp(tree)
 
@@ -38,9 +38,9 @@ object MyTraverser {
       tree match {
         case block@Block(stats, expr) => // exprはいらない？
           println("--- enter Block ---", s"line: ${block.pos.line} range: ${block.pos.column - (block.pos.point - block.pos.start) - 1} - ${block.pos.end - block.pos.start}")
-          if(classes.nonEmpty)classes(0).currentCallStack.intoBlock()
+          if (classes.nonEmpty) classes(0).currentCallStack.intoBlock()
           stats.foreach(itp(_))
-          if(classes.nonEmpty)classes(0).currentCallStack.outBlock()
+          if (classes.nonEmpty) classes(0).currentCallStack.outBlock()
 
         case list@List(xs) =>
           println("--- enter List ---", list)
@@ -124,7 +124,6 @@ object MyTraverser {
           println(showRaw(x))
       }
     }
-
 
   }
 
@@ -232,7 +231,7 @@ object MyTraverser {
 
     println(source)
 
-    new AnimationWindow(code.tree,source.toString)
+    new AnimationWindow(code.tree, source.toString)
 
 
 

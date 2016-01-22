@@ -5,12 +5,15 @@
       <w>annot</w>
       <w>combinators</w>
       <w>constr</w>
+      <w>decl</w>
+      <w>decls</w>
       <w>defdef</w>
       <w>defs</w>
       <w>elsep</w>
       <w>exprs</w>
       <w>forsome</w>
       <w>idrest</w>
+      <w>imprt</w>
       <w>larrow</w>
       <w>newlinecharacter</w>
       <w>opchar</w>
