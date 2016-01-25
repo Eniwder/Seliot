@@ -1,12 +1,12 @@
-package macros
-
 import java.io.File
+
+import util.ReflectionUtil
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.reflect.runtime.universe._
 
-object MyTraverser {
+object MyTraverser extends ReflectionUtil {
 
   val classes = scala.collection.mutable.Buffer[Class]()
   val modules = scala.collection.mutable.Buffer[Class]()
@@ -18,6 +18,8 @@ object MyTraverser {
 
 
     itp(tree)
+
+    invokeObjectMethod("Test","combinations",2,List('a, 'b, 'c, 'd, 'e))
 
     // for debug 普段は中身が消されてるので表示されない
     // outBlock,outCallStackをコメントアウトすれば出てくる
@@ -241,7 +243,7 @@ object MyTraverser {
 
 
 
-    new File(s"F:/Temp/Seliot/src/main/scala/macros/Out.scala").delete()
+    new File(s"F:/Temp/Seliot/src/main/scala/Out.scala").delete()
     c.literal(showRaw(code.tree))
   }
 
