@@ -9,17 +9,16 @@ import scala.reflect.runtime.universe._
 object MyTraverser extends ReflectionUtil {
 
   val classes = scala.collection.mutable.Buffer[Class]()
-  val modules = scala.collection.mutable.Buffer[Class]()
+  val module = new Class("")
 
   class AnimationWindow(tree: Any, source: String) {// extends MainFrame {
-//    title = "Animation Window"
-//    preferredSize = new Dimension(800, 600)
-//    visible = true
-
+    //    title = "Animation Window"
+    //    preferredSize = new Dimension(800, 600)
+    //    visible = true
 
     itp(tree)
 
-    invokeObjectMethod("Test","combinations",2,List('a, 'b, 'c, 'd, 'e))
+    // invokeObjectMethod("Test","combinations",2,List('a, 'b, 'c, 'd, 'e)) // バグる
 
     // for debug 普段は中身が消されてるので表示されない
     // outBlock,outCallStackをコメントアウトすれば出てくる
@@ -40,21 +39,21 @@ object MyTraverser extends ReflectionUtil {
       tree match {
         case block@Block(stats, expr) => // exprはいらない？
           println("--- enter Block ---", s"line: ${block.pos.line} range: ${block.pos.column - (block.pos.point - block.pos.start) - 1} - ${block.pos.end - block.pos.start}")
-          if (classes.nonEmpty) classes(0).currentCallStack.intoBlock()
+          module.currentCallStack.intoBlock()
           stats.foreach(itp(_))
-          if (classes.nonEmpty) classes(0).currentCallStack.outBlock()
+          module.currentCallStack.outBlock()
 
         case list@List(xs) =>
           println("--- enter List ---", list)
           println(showRaw(xs))
 
-        case classDef@ClassDef(mods, name, tparams, impl) =>
-          println("--- enter ClassDef ---", s"[$name]", s"line     : ${classDef.pos.line} range: ${classDef.pos.column - (classDef.pos.point - classDef.pos.start) - 1} - ${classDef.pos.end - classDef.pos.start}")
-          //   println(s"mod $mods")
-          println(s"tDef     : $tparams")
-          println(s"template : ${showRaw(impl)}")
-          classes += new Class(name.toString)
-          itp(impl)
+//        case classDef@ClassDef(mods, name, tparams, impl) =>
+//          println("--- enter ClassDef ---", s"[$name]", s"line     : ${classDef.pos.line} range: ${classDef.pos.column - (classDef.pos.point - classDef.pos.start) - 1} - ${classDef.pos.end - classDef.pos.start}")
+//          //   println(s"mod $mods")
+//          println(s"tDef     : $tparams")
+//          println(s"template : ${showRaw(impl)}")
+//          classes += new Class(name.toString)
+//          itp(impl)
 
         case template@Template(parents, self, body) =>
           println("--- enter Template ---", s"line  : ${template.pos.line} range: ${template.pos.column - (template.pos.point - template.pos.start) - 1} - ${template.pos.end - template.pos.start}")
@@ -78,7 +77,7 @@ object MyTraverser extends ReflectionUtil {
           println("--- enter ValDef ---", s"[$name]", s"line : ${valDef.pos.line} range: ${valDef.pos.column - (valDef.pos.point - valDef.pos.start) - 1} - ${valDef.pos.end - valDef.pos.start}")
           println(s"tpt  : $tpt")
           println(s"rhs  : $rhs")
-          classes(0).currentCallStack.currentScope.putVariable(name.toString, rhs)
+          module.currentCallStack.currentScope.putVariable(name.toString, rhs)
         //    println(showRaw(valDef))
 
         case modDef@ModuleDef(mods, name, impl) =>
@@ -86,7 +85,6 @@ object MyTraverser extends ReflectionUtil {
           println(s"mods  : $mods")
           println(s"impl  : $impl")
           println(s"line : ${modDef.pos.line} range: ${modDef.pos.column - (modDef.pos.point - modDef.pos.start) - 1} - ${modDef.pos.end - modDef.pos.start}")
-          classes += new Class(name.toString)
           itp(impl)
 
         case ifCond@If(cond, thenp, elsep) =>
@@ -103,11 +101,6 @@ object MyTraverser extends ReflectionUtil {
           fun collect { case ap@Apply(_, _) => itp(ap) }
           println(s"args  : $args")
 
-        case imprt@Import(expr, selectors) =>
-          println("--- enter Import ---")
-          println(s"expr      : $expr")
-          println(s"selectors : $selectors")
-
         case mat@Match(selector, cases) =>
           println("--- enter Match ---", s"line : ${mat.pos.line} range: ${mat.pos.column - (mat.pos.point - mat.pos.start) - 1} - ${mat.pos.end - mat.pos.start}")
           println(s"selector : $selector")
@@ -120,7 +113,10 @@ object MyTraverser extends ReflectionUtil {
           println(s"guard : $guard")
           print(s"body  : ---->")
           itp(body)
-
+//        case imprt@Import(expr, selectors) =>
+//          println("--- enter Import ---")
+//          println(s"expr      : $expr")
+//          println(s"selectors : $selectors")
         case x =>
           println("--- enter Default ---", x)
           println(showRaw(x))
