@@ -33,7 +33,16 @@ object MyTraverser extends ReflectionUtil {
       println(s"variable :${" " * callStack._2}|${" " * block._2}${block._1.declMap.mkString(" , ")}")
     }
 
-    def itp(tree: Any) {
+    def itp(tree: Any): Any = {
+
+      // return (ClassName,FunctionName)
+      def funcData(func: String): (String, String) = {
+        val fntmp = func.toString.split("this.") // this.っていう余計な修飾子を排除
+        val fntmp2 = if (fntmp.length != 1) fntmp(1) else fntmp(0) // 上の続き
+        val (className, funcName) = fntmp2.splitAt(fntmp2.lastIndexOf('.'))
+        (className, funcName.tail) // funcNameから余計な"."を取って返す
+      }
+
       //   val ui = new UI(showRaw(tree))
       println()
       tree match {
@@ -77,7 +86,9 @@ object MyTraverser extends ReflectionUtil {
           println("--- enter ValDef ---", s"[$name]", s"line : ${valDef.pos.line} range: ${valDef.pos.column - (valDef.pos.point - valDef.pos.start) - 1} - ${valDef.pos.end - valDef.pos.start}")
           println(s"tpt  : $tpt")
           println(s"rhs  : $rhs")
-          module.currentCallStack.currentScope.putVariable(name.toString, rhs)
+          val value = itp(rhs)
+          println("<><><><><><>" + value)
+          module.currentCallStack.currentScope.putVariable(name.toString, value)
         //    println(showRaw(valDef))
 
         case modDef@ModuleDef(mods, name, impl) =>
@@ -99,7 +110,13 @@ object MyTraverser extends ReflectionUtil {
         case apply@Apply(fun, args) =>
           println("--- enter Apply ---", s"[$fun]")
           fun collect { case ap@Apply(_, _) => itp(ap) }
+          val argValues = args map itp
+          val (className, funcName) = funcData(fun.toString())
+          println(className,funcName)
+          invokeObjectMethod(className, funcName, argValues: _*)
+          println("*************" + argValues)
           println(s"args  : $args")
+
 
         case mat@Match(selector, cases) =>
           println("--- enter Match ---", s"line : ${mat.pos.line} range: ${mat.pos.column - (mat.pos.point - mat.pos.start) - 1} - ${mat.pos.end - mat.pos.start}")
@@ -117,6 +134,22 @@ object MyTraverser extends ReflectionUtil {
 //          println("--- enter Import ---")
 //          println(s"expr      : $expr")
 //          println(s"selectors : $selectors")
+
+        case lit@Literal(value) =>
+          println("--- enter Literal ---", s"line : ${lit.pos.line} range: ${lit.pos.column - (lit.pos.point - lit.pos.start) - 1} - ${lit.pos.end - lit.pos.start}")
+          println(s"value : $value")
+          itp(value)
+
+        case const@Constant(value) =>
+          println("--- enter Constant ---", s"[$value]")
+          val x = value.toString
+          // とりあえず文字列か整数か判定
+          if (x.toCharArray.exists(!_.isDigit)) x else x.toInt
+
+        case id@Ident(ident) =>
+          println("--- enter Ident ---", s"[$ident]")
+          id
+
         case x =>
           println("--- enter Default ---", x)
           println(showRaw(x))
