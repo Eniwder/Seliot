@@ -23,6 +23,7 @@ trait ReflectionUtil {
   // メソッド呼び出し
   def invokeObjectMethod[T: uni.TypeTag : ClassTag, B](name: String, methodName: String, args: Any*): B = {
     val runtimeMirror = uni.runtimeMirror(getClass.getClassLoader)
+    println(uni.typeOf[T].termSymbol)
     val module = uni.typeOf[T].termSymbol.asModule
     val theType = uni.typeTag[T].tpe
     val mm = runtimeMirror.reflectModule(module)

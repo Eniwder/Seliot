@@ -37,10 +37,13 @@ object MyTraverser extends ReflectionUtil {
 
       // return (ClassName,FunctionName)
       def funcData(func: String): (String, String) = {
-        val fntmp = func.toString.split("this.") // this.っていう余計な修飾子を排除
-        val fntmp2 = if (fntmp.length != 1) fntmp(1) else fntmp(0) // 上の続き
-        val (className, funcName) = fntmp2.splitAt(fntmp2.lastIndexOf('.'))
-        (className, funcName.tail) // funcNameから余計な"."を取って返す
+        println(func)
+        //        val fntmp = func.toString.split("this.") // this.っていう余計な修飾子を排除
+//        val fntmp2 = if (fntmp.length != 1) fntmp(1) else fntmp(0) // 上の続き
+        val fntmp = func.toString.split('.')
+        //val (className, funcName) = fntmp2.splitAt(fntmp2.lastIndexOf('.'))
+        (fntmp(fntmp.length - 2), fntmp(fntmp.length - 1))
+        //       (className, funcName.tail) // funcNameから余計な"."を取って返す
       }
 
       //   val ui = new UI(showRaw(tree))
@@ -112,11 +115,15 @@ object MyTraverser extends ReflectionUtil {
           fun collect { case ap@Apply(_, _) => itp(ap) }
           val argValues = args map itp
           val (className, funcName) = funcData(fun.toString())
-          println(className,funcName)
-          invokeObjectMethod(className, funcName, argValues: _*)
+          println(className, funcName)
+          if (className.contains("super") || (funcName.contains("<") && funcName.contains(">"))) {
+
+          } else {
+            invokeCompanionMethod(className, funcName, argValues: _*)
+//            invokeObjectMethod[Symbol,Symbol](className, funcName, argValues: _*)
+          }
           println("*************" + argValues)
           println(s"args  : $args")
-
 
         case mat@Match(selector, cases) =>
           println("--- enter Match ---", s"line : ${mat.pos.line} range: ${mat.pos.column - (mat.pos.point - mat.pos.start) - 1} - ${mat.pos.end - mat.pos.start}")
