@@ -31,6 +31,8 @@
     <orderEntry type="library" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.5:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scalaz:scalaz-core_2.11:7.1.5:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-swing:2.11.0-M7:jar" level="project" />
-    <orderEntry type="library" name="scala-sdk-2.11.5 (3)" level="application" />
+    <orderEntry type="library" name="SBT: org.scala-debugger:scala-debugger-api_2.11:1.0.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-debugger:scala-debugger-macros_2.11:1.0.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.7.5:jar" level="project" />
   </component>
 </module>
