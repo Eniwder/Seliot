@@ -51,6 +51,8 @@ object MyTraverser extends ReflectionUtil {
       tree match {
         case block@Block(stats, expr) => // exprはいらない？
           println("--- enter Block ---", s"line: ${block.pos.line} range: ${block.pos.column - (block.pos.point - block.pos.start) - 1} - ${block.pos.end - block.pos.start}")
+          println(show(block))
+          println(showRaw(block))
           module.currentCallStack.intoBlock()
           println(expr)
           stats.foreach(itp(_))
@@ -118,7 +120,7 @@ object MyTraverser extends ReflectionUtil {
           val argValues = args map itp
           val (className, funcName) = funcData(fun.toString())
           println(className, funcName)
-          println("*************" + argValues)
+          println("******argValues*******" + argValues)
           println(s"args  : $args")
           if (className.contains("super") || (funcName.contains("<") && funcName.contains(">"))) {
             // とりあえず何もしない
@@ -131,6 +133,12 @@ object MyTraverser extends ReflectionUtil {
               }
             }
           }
+
+        case func@Function(vparams, body) =>
+          println("--- enter Function ---", s"line : ${func.pos.line} range: ${func.pos.column - (func.pos.point - func.pos.start) - 1} - ${func.pos.end - func.pos.start}")
+          println(s"vparams : $vparams")
+          println(s"body    :  $body")
+          itp(body)
 
         case mat@Match(selector, cases) =>
           println("--- enter Match ---", s"line : ${mat.pos.line} range: ${mat.pos.column - (mat.pos.point - mat.pos.start) - 1} - ${mat.pos.end - mat.pos.start}")
